@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{683CBBBA-0B26-4C1B-BC6B-E4CB2EEC7CA7}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="..\..\I.a\RedeRecImg-main\SistemaInteligente.cbproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Rna.cbproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="SistemaInteligente">
+        <MSBuild Projects="..\..\I.a\RedeRecImg-main\SistemaInteligente.cbproj"/>
+    </Target>
+    <Target Name="SistemaInteligente:Clean">
+        <MSBuild Projects="..\..\I.a\RedeRecImg-main\SistemaInteligente.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SistemaInteligente:Make">
+        <MSBuild Projects="..\..\I.a\RedeRecImg-main\SistemaInteligente.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Rna">
+        <MSBuild Projects="Rna.cbproj"/>
+    </Target>
+    <Target Name="Rna:Clean">
+        <MSBuild Projects="Rna.cbproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Rna:Make">
+        <MSBuild Projects="Rna.cbproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="SistemaInteligente;Rna"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="SistemaInteligente:Clean;Rna:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="SistemaInteligente:Make;Rna:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
