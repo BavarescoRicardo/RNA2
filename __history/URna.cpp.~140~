@@ -13,6 +13,7 @@
 TFmRna *FmRna;
 Thread *MyThread;
 void lerArquivos(AnsiString ArquivoDeEventos);
+void addAmostraGraph(int NumeroDeAmostras, double* Amostras);
 
 
 
@@ -273,50 +274,65 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 	FILE *arq_treinamento;
 	double* Amostras2;
 	int contNum = 0;
-	AnsiString name[3]  = {"Espícula%", "Piscada%", "Ruido%"};
 
-  // AnsiString APath = "padroes/"+name[i]+".txt";
-  AnsiString APath = ArquivoDeEventos;
-  PtArquivoDeEventos = fopen(APath.c_str() ,"rt");
+	// AnsiString APath = "padroes/"+name[i]+".txt";
+	AnsiString APath = ArquivoDeEventos;
+	PtArquivoDeEventos = fopen(APath.c_str() ,"rt");
 
-  //Número de Amostras do Evento.
-  fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
+	//Número de Amostras do Evento.
+	fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
 
-  //Duração do Evento.
-  fscanf(PtArquivoDeEventos, "%d\n", &Duracao);
+	//Duração do Evento.
+	fscanf(PtArquivoDeEventos, "%d\n", &Duracao);
 
-  //Tipo do Evento.
-  fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
+	//Tipo do Evento.
+	fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
 
-  //Redimensiona o vetor de amostras do evento.
-   //Amostras.resize(NumeroDeAmostras);
-   double Amostras[NumeroDeAmostras];
+	//Redimensiona o vetor de amostras do evento.
+	//Amostras.resize(NumeroDeAmostras);
+	double Amostras[NumeroDeAmostras];
 
-  //Recebe as amostras do evento do arquivo.
-  for (int a = 0; a < (int) NumeroDeAmostras/64; a++)
-  {
-	fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
-	//fscanf(PtArquivoDeEventos, "%lf\n", &p[a]);
-  }
+	//Recebe as amostras do evento do arquivo.
+	for (int a = 0; a < (int) NumeroDeAmostras; a++)
+	{
+		fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
+		//fscanf(PtArquivoDeEventos, "%lf\n", &p[a]);
 
-  //Fecha o Ponteiro do Arquivo de Padrões.
-  fclose(PtArquivoDeEventos);
+		// Adicionar ai terceiro grafico
+		//FmRna->amostrasGraf->Series[0]->AddY(Amostras[a]);
+	}
 
-  //Sinaliza se o arquivo foi aberto corretamente.
-  status = true;
+	//Fecha o Ponteiro do Arquivo de Padrões.
+	fclose(PtArquivoDeEventos);
+
+	//Sinaliza se o arquivo foi aberto corretamente.
+	status = true;
+
+    // Plota as amostrar no gráfico
+	addAmostraGraph(NumeroDeAmostras, Amostras);
 
   }
   else
   {
 	status = false;
 	// recebe_string = ExtractFileName(ArquivoDeEventos).c_str();
-//    Application->MessageBox("Erro ao abrir o arquivo de Eventos", MB_OK);
+   ShowMessage("Erro ao abrir o arquivo de Eventos", MB_OK);
   }
 
   //return (status);
 }
 //---------------------------------------------------------------------------
 
+void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
+{
+
+    	for (int a = 0; a < (int) NumeroDeAmostras; a++)
+	{
+		// Adicionar ao terceiro grafico
+		FmRna->amostrasGraf->Series[0]->AddY(Amostras[a]);
+	}
+
+}
 
 
 //---------------------------------------------------------------------------
@@ -1149,9 +1165,15 @@ void __fastcall TFmRna::ListBox2Click(TObject *Sender)
 
 void __fastcall TFmRna::Button3Click(TObject *Sender)
 {
-	//Application->MessageBox(WideString("Função abrir o arquivo de Eventos"), MB_OK);
-//	lerArquivos("padroes/Ruido_PacH2_Tp9-Pz_004238_2048_0ms.pdr");
-	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/Ruido_PacH2_Tp9-Pz_004238_2048_0ms.pdr");
+//    ProcurarArquivo
+
+	ProcurarArquivo = new TOpenDialog(this);
+	ProcurarArquivo->Title="Open a New File";
+	ProcurarArquivo->Execute();
+
+    amostrasGraf->Series[0]->Clear();
+	ShowMessage("Arquivo selecionado:  " + ExtractFileName(ProcurarArquivo->FileName));
+	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName(ProcurarArquivo->FileName));
 }
 //---------------------------------------------------------------------------
 

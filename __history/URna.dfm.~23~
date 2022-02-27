@@ -19,7 +19,7 @@ object FmRna: TFmRna
     Top = 8
     Width = 1128
     Height = 509
-    ActivePage = TabSheet1
+    ActivePage = tabs03
     MultiLine = True
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -347,6 +347,36 @@ object FmRna: TFmRna
         OnClick = ListBox2Click
       end
     end
+    object tabs03: TTabSheet
+      Caption = 'Padr'#245'es'
+      ImageIndex = 2
+      object amostrasGraf: TChart
+        Left = 3
+        Top = 3
+        Width = 750
+        Height = 482
+        Title.Text.Strings = (
+          'TChart')
+        TabOrder = 0
+        DefaultCanvas = 'TGDIPlusCanvas'
+        ColorPaletteIndex = 13
+        object Series5: TLineSeries
+          Shadow.Visible = False
+          Title = 'sinalA'
+          Brush.BackColor = clDefault
+          Dark3D = False
+          DrawStyle = dsCurve
+          Pointer.Draw3D = False
+          Pointer.InflateMargins = True
+          Pointer.Style = psRectangle
+          XValues.Name = 'X'
+          XValues.Order = loAscending
+          YValues.Name = 'Y'
+          YValues.Order = loNone
+          Transparency = 7
+        end
+      end
+    end
   end
   object Panel1: TPanel
     Left = 8
@@ -365,5 +395,11 @@ object FmRna: TFmRna
       TabOrder = 0
       OnClick = Button3Click
     end
+  end
+  object ProcurarArquivo: TOpenDialog
+    FileName = 'foundfile'
+    Options = [ofEnableSizing]
+    Left = 528
+    Top = 531
   end
 end

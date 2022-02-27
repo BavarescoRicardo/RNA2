@@ -90,6 +90,10 @@ object FmRna: TFmRna
     object TabSheet2: TTabSheet
       Caption = 'Padr'#245'es de Treinamento'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Shape1: TShape
         Left = 960
         Top = 3
@@ -345,6 +349,57 @@ object FmRna: TFmRna
           '10.6')
         TabOrder = 2
         OnClick = ListBox2Click
+      end
+    end
+    object tabs03: TTabSheet
+      Caption = 'Padr'#245'es'
+      ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
+      object amostrasGraf: TChart
+        Left = 3
+        Top = 3
+        Width = 830
+        Height = 482
+        Title.Text.Strings = (
+          'TChart')
+        TabOrder = 0
+        DefaultCanvas = 'TGDIPlusCanvas'
+        ColorPaletteIndex = 13
+        object Series5: TLineSeries
+          Shadow.Visible = False
+          Title = 'sinalA'
+          Brush.BackColor = clDefault
+          Dark3D = False
+          DrawStyle = dsCurve
+          Pointer.Draw3D = False
+          Pointer.InflateMargins = True
+          Pointer.Style = psRectangle
+          XValues.Name = 'X'
+          XValues.Order = loAscending
+          YValues.Name = 'Y'
+          YValues.Order = loNone
+          Transparency = 7
+        end
+      end
+      object Button4: TButton
+        Left = 896
+        Top = 48
+        Width = 175
+        Height = 50
+        Caption = 'Normalizar amostras'
+        TabOrder = 1
+      end
+      object Button5: TButton
+        Left = 896
+        Top = 240
+        Width = 175
+        Height = 50
+        Caption = 'Transferir amostras para os padr'#245'es'
+        TabOrder = 2
+        WordWrap = True
       end
     end
   end

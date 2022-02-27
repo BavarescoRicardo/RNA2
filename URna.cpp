@@ -13,6 +13,7 @@
 TFmRna *FmRna;
 Thread *MyThread;
 void lerArquivos(AnsiString ArquivoDeEventos);
+void addAmostraGraph(int NumeroDeAmostras, double* Amostras);
 
 
 
@@ -254,7 +255,7 @@ float dv[3][c2] =
 //---------------------------------------------------------------------------
 
 
-	//Método de abertura dos arquivos de eventos.
+//Método de abertura dos arquivos de eventos.
 void lerArquivos(AnsiString ArquivoDeEventos)
 {
 
@@ -273,7 +274,6 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 	FILE *arq_treinamento;
 	double* Amostras2;
 	int contNum = 0;
-	AnsiString name[3]  = {"Espícula%", "Piscada%", "Ruido%"};
 
 	// AnsiString APath = "padroes/"+name[i]+".txt";
 	AnsiString APath = ArquivoDeEventos;
@@ -295,8 +295,7 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 	//Recebe as amostras do evento do arquivo.
 	for (int a = 0; a < (int) NumeroDeAmostras; a++)
 	{
-	fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
-	//fscanf(PtArquivoDeEventos, "%lf\n", &p[a]);
+		fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
 	}
 
 	//Fecha o Ponteiro do Arquivo de Padrões.
@@ -305,18 +304,30 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 	//Sinaliza se o arquivo foi aberto corretamente.
 	status = true;
 
+    // Plota as amostrar no gráfico
+	addAmostraGraph(NumeroDeAmostras, Amostras);
+
   }
   else
   {
 	status = false;
 	// recebe_string = ExtractFileName(ArquivoDeEventos).c_str();
-//    Application->MessageBox("Erro ao abrir o arquivo de Eventos", MB_OK);
+  	ShowMessage("Erro ao abrir o arquivo de Eventos");
   }
 
   //return (status);
 }
 //---------------------------------------------------------------------------
 
+void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
+{
+	for (int a = 0; a < (int) NumeroDeAmostras; a++)
+	{
+		// Adicionar ao terceiro grafico
+		FmRna->amostrasGraf->Series[0]->AddY(Amostras[a]);
+	}
+
+}
 
 
 //---------------------------------------------------------------------------
@@ -1155,6 +1166,7 @@ void __fastcall TFmRna::Button3Click(TObject *Sender)
 	ProcurarArquivo->Title="Open a New File";
 	ProcurarArquivo->Execute();
 
+    amostrasGraf->Series[0]->Clear();
 	ShowMessage("Arquivo selecionado:  " + ExtractFileName(ProcurarArquivo->FileName));
 	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName(ProcurarArquivo->FileName));
 }

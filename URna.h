@@ -62,6 +62,11 @@ class TFmRna : public TForm
 	TPanel *Panel1;
 	TButton *Button3;
 	TOpenDialog *ProcurarArquivo;
+	TTabSheet *tabs03;
+	TChart *amostrasGraf;
+	TLineSeries *Series5;
+	TButton *Button4;
+	TButton *Button5;
 		void __fastcall Button1Click(TObject *Sender);
 		void __fastcall Button2Click(TObject *Sender);
         void __fastcall AtualizaGrafico();
