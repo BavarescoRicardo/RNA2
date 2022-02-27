@@ -264,43 +264,50 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 
   //Declaração da variável de status de abertura do arquivo.
   bool status = false;
-  ShowMessage("Entrou no metodo");
 
   //Verifica se o arquivo existe antes de abrir.
   if (FileExists(ArquivoDeEventos))
   {
-    ShowMessage("Passou do if - significa q tem esse arquivo");
+    ShowMessage("Encontrou e conseguiu abrir o arquivo dentro do metodo");
 	//Abertura do Arquivo de Padrões.
 	FILE *arq_treinamento;
+	double* Amostras;
 	int contNum = 0;
 	AnsiString name[3]  = {"Espícula%", "Piscada%", "Ruido%"};
-	// de 0 - 10, numero, name[i]
-	for (int i=0; i < 10; i++)
+
+	for (int i=0; i < 2; i++)
 	{
-		// de 0 - 5, mesmo número, 5 padrões diferentes
-		for(int j = 0; j < 5; j++)
-		{
-			// AnsiString APath = "padroes/"+name[i]+".txt";
-            AnsiString APath = ArquivoDeEventos;
-			arq_treinamento = fopen(APath.c_str() ,"rt");
-			if (arq_treinamento != NULL)
-			{
-				// insere no array P os valores dos 400 pixels equivalentes
-				// a matriz 20x20 do arquivo aberto.
-				for (k = 0; k < 2; k++)
-				{
-					fscanf(arq_treinamento, "%1f", &p[contNum][k]);
-				}
-				contNum++;
-				fclose(arq_treinamento);
-			}
-			else
-			{
-				fclose(arq_treinamento);
-				continue;
-			}
-		}
-	}
+
+		// AnsiString APath = "padroes/"+name[i]+".txt";
+		AnsiString APath = ArquivoDeEventos;
+		PtArquivoDeEventos = fopen(APath.c_str() ,"rt");
+
+
+	  //Número de Amostras do Evento.
+	  fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
+
+	  //Duração do Evento.
+	  fscanf(PtArquivoDeEventos, "%d\n", &Duracao);
+
+	  //Tipo do Evento.
+	  fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
+
+	  //Redimensiona o vetor de amostras do evento.
+	  // Amostras.resize(NumeroDeAmostras);
+
+	  //Recebe as amostras do evento do arquivo.
+	  for (int a = 0; a < (int) NumeroDeAmostras; a++)
+	  {
+		fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
+		//fscanf(PtArquivoDeEventos, "%lf\n", &p[a]);
+	  }
+
+	  //Fecha o Ponteiro do Arquivo de Padrões.
+	  fclose(PtArquivoDeEventos);
+
+	  //Sinaliza se o arquivo foi aberto corretamente.
+	  status = true;
+    }
   }
   else
   {
