@@ -14,6 +14,7 @@ TFmRna *FmRna;
 Thread *MyThread;
 void lerArquivos(AnsiString ArquivoDeEventos);
 void addAmostraGraph(int NumeroDeAmostras, double* Amostras);
+void normAmostras(int NumeroDeAmostras, double* Amostras);
 
 
 
@@ -90,9 +91,9 @@ float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 
 
 
-const int cx = 100;         // Camada de entrada.
-const int c1 = 10;          // Camada Intermediária.
-const int c2 = 2;           // Camada de Saída.
+const int cx = 2048;         // Camada de entrada.
+const int c1 = 5;          // Camada Intermediária.
+const int c2 = 1;           // Camada de Saída.
 
 float w1[cx*c1]  = {0};     // cx*c1
 float w2[c1*c2]  = {0};     // c1*c2
@@ -255,7 +256,7 @@ float dv[3][c2] =
 //---------------------------------------------------------------------------
 
 
-	//Método de abertura dos arquivos de eventos.
+//Método de abertura dos arquivos de eventos.
 void lerArquivos(AnsiString ArquivoDeEventos)
 {
 
@@ -296,10 +297,6 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 	for (int a = 0; a < (int) NumeroDeAmostras; a++)
 	{
 		fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
-		//fscanf(PtArquivoDeEventos, "%lf\n", &p[a]);
-
-		// Adicionar ai terceiro grafico
-		FmRna->amostrasGraf->Series[0]->AddY(Amostras[a]);
 	}
 
 	//Fecha o Ponteiro do Arquivo de Padrões.
@@ -309,14 +306,14 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 	status = true;
 
     // Plota as amostrar no gráfico
-	addAmostraGraph(int NumeroDeAmostras, double* Amostras);
+	addAmostraGraph(NumeroDeAmostras, Amostras);
 
   }
   else
   {
 	status = false;
 	// recebe_string = ExtractFileName(ArquivoDeEventos).c_str();
-//    Application->MessageBox("Erro ao abrir o arquivo de Eventos", MB_OK);
+  	ShowMessage("Erro ao abrir o arquivo de Eventos");
   }
 
   //return (status);
@@ -325,11 +322,25 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 
 void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 {
-
-    	for (int a = 0; a < (int) NumeroDeAmostras; a++)
+	for (int a = 0; a < (int) NumeroDeAmostras; a++)
 	{
 		// Adicionar ao terceiro grafico
 		FmRna->amostrasGraf->Series[0]->AddY(Amostras[a]);
+	}
+
+}
+
+void normAmostras(int NumeroDeAmostras, double* Amostras)
+{
+    // Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
+	for (int a = 0; a < (int) NumeroDeAmostras; a++)
+	{
+		// Normalizar valores amostras para ficar entre -1 e 1
+		// Possíveis formas de normalizar são:
+			// Somar um numero a todas as amostrar para: 		Deslocar
+			// Multiplicar ou dividir todas as amostras para:   Escalonar
+            p[xx1][a] = amostras[a];
+
 	}
 
 }
@@ -410,7 +421,7 @@ void __fastcall Thread::Execute()
     /* initialize random weights: */
     srand (time(NULL));
 
-	padroes = 10;                   // Número de padrões a treinar.
+	padroes = 3;                   // Número de padrões a treinar.
 	funcao = 0;                 	// Função Logística(0).
 	taxa_aprendizado = 0.001;    	// Taxa de Aprendizado.
 	precisao_da_randomizacao = 0.01; // Precisão da randomização (0.1, 0.01, 0.001)
@@ -1176,4 +1187,5 @@ void __fastcall TFmRna::Button3Click(TObject *Sender)
 	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName(ProcurarArquivo->FileName));
 }
 //---------------------------------------------------------------------------
+
 

@@ -65,7 +65,7 @@ class TFmRna : public TForm
 	TTabSheet *tabs03;
 	TChart *amostrasGraf;
 	TLineSeries *Series5;
-	TButton *Button4;
+	TButton *btnNorm;
 	TButton *Button5;
 		void __fastcall Button1Click(TObject *Sender);
 		void __fastcall Button2Click(TObject *Sender);
@@ -74,6 +74,7 @@ class TFmRna : public TForm
 	void __fastcall ListBox1Click(TObject *Sender);
 	void __fastcall ListBox2Click(TObject *Sender);
 	void __fastcall Button3Click(TObject *Sender);
+	void __fastcall btnNormClick(TObject *Sender);
 
 
 	private:	// User declarations
