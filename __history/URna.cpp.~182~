@@ -287,7 +287,7 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 
 	//Redimensiona o vetor de amostras do evento.
 	//Amostras.resize(NumeroDeAmostras);
-	double Amostras[NumeroDeAmostras];
+	Amostras = new double[NumeroDeAmostras];
 
 	//Recebe as amostras do evento do arquivo.
 	for (int a = 0; a < (int) NumeroDeAmostras; a++)
@@ -318,6 +318,9 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 
 void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 {
+	// Limpar dados do gráfico
+	FmRna->amostrasGraf->Series[0]->Clear();
+
 	for (int a = 0; a < (int) NumeroDeAmostras; a++)
 	{
 		// Adicionar ao terceiro grafico
@@ -337,8 +340,12 @@ void normAmostras(int NumeroDeAmostras, double* Amostras)
 			// Possíveis formas de normalizar são:
 				// Somar um numero a todas as amostrar para: 		Deslocar
 				// Multiplicar ou dividir todas as amostras para:   Escalonar
-				p[xx1][a] = ((Amostras[a] + 10) * 0.10 );
-				Amostras[a] = p[xx1][a];
+				if (Amostras != NULL)
+				{
+					p[xx1][a] = ((Amostras[a] + 10) * 0.20);
+					Amostras[a] = p[xx1][a];
+				}
+
 		}
 	}
 
@@ -1189,4 +1196,15 @@ void __fastcall TFmRna::Button3Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+
+void __fastcall TFmRna::btnNormClick(TObject *Sender)
+{
+	if (!((NumeroDeAmostras > 0) and (padroes > 0)))
+	{
+        ShowMessage("Primeiro deve carregar um arquivo e treinar rede");
+        return;
+	}
+    normAmostras(NumeroDeAmostras, Amostras);
+}
+//---------------------------------------------------------------------------
 

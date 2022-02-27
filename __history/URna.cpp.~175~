@@ -245,8 +245,7 @@ float dv[3][c2] =
 0.0,	0.0,	0.0,	0.0,	0.0,    0.0,	0.0,    0.0,	0.0,	1.0
 */
 
-0.0,	0.0,    0.0,
-0.0,	1.0,    0.0
+0.0,	0.0,    0.0
 };
 
 
@@ -338,11 +337,17 @@ void normAmostras(int NumeroDeAmostras, double* Amostras)
 			// Possíveis formas de normalizar são:
 				// Somar um numero a todas as amostrar para: 		Deslocar
 				// Multiplicar ou dividir todas as amostras para:   Escalonar
-				p[xx1][a] = Amostras[a];
+				if (Amostras != NULL)
+				{
+					p[xx1][a] = ((Amostras[a] + 20));
+					Amostras[a] = p[xx1][a];
+				}
 
 		}
 	}
 
+        // Plota as amostrar - Normalizadas -  no gráfico
+	addAmostraGraph(NumeroDeAmostras, Amostras);
 }
 
 
@@ -1188,4 +1193,15 @@ void __fastcall TFmRna::Button3Click(TObject *Sender)
 }
 //---------------------------------------------------------------------------
 
+
+void __fastcall TFmRna::btnNormClick(TObject *Sender)
+{
+	if (!((NumeroDeAmostras > 0) and (padroes > 0)))
+	{
+        ShowMessage("Primeiro deve carregar um arquivo e treinar rede");
+        return;
+	}
+    normAmostras(NumeroDeAmostras, Amostras);
+}
+//---------------------------------------------------------------------------
 

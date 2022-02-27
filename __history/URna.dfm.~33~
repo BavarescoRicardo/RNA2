@@ -353,7 +353,7 @@ object FmRna: TFmRna
       object amostrasGraf: TChart
         Left = 3
         Top = 3
-        Width = 750
+        Width = 830
         Height = 482
         Title.Text.Strings = (
           'TChart')
@@ -375,6 +375,24 @@ object FmRna: TFmRna
           YValues.Order = loNone
           Transparency = 7
         end
+      end
+      object btnNorm: TButton
+        Left = 896
+        Top = 48
+        Width = 175
+        Height = 50
+        Caption = 'Normalizar amostras'
+        TabOrder = 1
+        OnClick = btnNormClick
+      end
+      object Button5: TButton
+        Left = 896
+        Top = 240
+        Width = 175
+        Height = 50
+        Caption = 'Transferir amostras para os padr'#245'es'
+        TabOrder = 2
+        WordWrap = True
       end
     end
   end

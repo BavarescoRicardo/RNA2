@@ -19,7 +19,7 @@ object FmRna: TFmRna
     Top = 8
     Width = 1128
     Height = 509
-    ActivePage = tabs03
+    ActivePage = TabSheet1
     MultiLine = True
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -90,6 +90,10 @@ object FmRna: TFmRna
     object TabSheet2: TTabSheet
       Caption = 'Padr'#245'es de Treinamento'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Shape1: TShape
         Left = 960
         Top = 3
@@ -350,6 +354,10 @@ object FmRna: TFmRna
     object tabs03: TTabSheet
       Caption = 'Padr'#245'es'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object amostrasGraf: TChart
         Left = 3
         Top = 3
@@ -376,13 +384,14 @@ object FmRna: TFmRna
           Transparency = 7
         end
       end
-      object Button4: TButton
+      object btnNorm: TButton
         Left = 896
         Top = 48
         Width = 175
         Height = 50
         Caption = 'Normalizar amostras'
         TabOrder = 1
+        OnClick = btnNormClick
       end
       object Button5: TButton
         Left = 896
@@ -391,6 +400,7 @@ object FmRna: TFmRna
         Height = 50
         Caption = 'Transferir amostras para os padr'#245'es'
         TabOrder = 2
+        WordWrap = True
       end
     end
   end
