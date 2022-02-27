@@ -16,6 +16,7 @@
 #include <VCLTee.TeEngine.hpp>
 #include <VCLTee.TeeProcs.hpp>
 #include <Vcl.ComCtrls.hpp>
+#include <Vcl.Dialogs.hpp>
 
 //---------------------------------------------------------------------------
 
@@ -60,6 +61,7 @@ class TFmRna : public TForm
 	TFastLineSeries *Series4;
 	TPanel *Panel1;
 	TButton *Button3;
+	TOpenDialog *ProcurarArquivo;
 		void __fastcall Button1Click(TObject *Sender);
 		void __fastcall Button2Click(TObject *Sender);
         void __fastcall AtualizaGrafico();

@@ -90,10 +90,6 @@ object FmRna: TFmRna
     object TabSheet2: TTabSheet
       Caption = 'Padr'#245'es de Treinamento'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Shape1: TShape
         Left = 960
         Top = 3
@@ -369,5 +365,11 @@ object FmRna: TFmRna
       TabOrder = 0
       OnClick = Button3Click
     end
+  end
+  object ProcurarArquivo: TOpenDialog
+    FileName = 'foundfile'
+    Options = [ofEnableSizing]
+    Left = 528
+    Top = 531
   end
 end

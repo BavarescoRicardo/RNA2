@@ -268,46 +268,43 @@ void lerArquivos(AnsiString ArquivoDeEventos)
   //Verifica se o arquivo existe antes de abrir.
   if (FileExists(ArquivoDeEventos))
   {
-    ShowMessage("Encontrou e conseguiu abrir o arquivo dentro do metodo");
+	ShowMessage("Encontrou e conseguiu abrir o arquivo dentro do metodo");
 	//Abertura do Arquivo de Padrões.
 	FILE *arq_treinamento;
-	double* Amostras;
+	double* Amostras2;
 	int contNum = 0;
 	AnsiString name[3]  = {"Espícula%", "Piscada%", "Ruido%"};
 
-	for (int i=0; i < 2; i++)
+	// AnsiString APath = "padroes/"+name[i]+".txt";
+	AnsiString APath = ArquivoDeEventos;
+	PtArquivoDeEventos = fopen(APath.c_str() ,"rt");
+
+	//Número de Amostras do Evento.
+	fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
+
+	//Duração do Evento.
+	fscanf(PtArquivoDeEventos, "%d\n", &Duracao);
+
+	//Tipo do Evento.
+	fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
+
+	//Redimensiona o vetor de amostras do evento.
+	//Amostras.resize(NumeroDeAmostras);
+	double Amostras[NumeroDeAmostras];
+
+	//Recebe as amostras do evento do arquivo.
+	for (int a = 0; a < (int) NumeroDeAmostras; a++)
 	{
+	fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
+	//fscanf(PtArquivoDeEventos, "%lf\n", &p[a]);
+	}
 
-		// AnsiString APath = "padroes/"+name[i]+".txt";
-		AnsiString APath = ArquivoDeEventos;
-		PtArquivoDeEventos = fopen(APath.c_str() ,"rt");
+	//Fecha o Ponteiro do Arquivo de Padrões.
+	fclose(PtArquivoDeEventos);
 
+	//Sinaliza se o arquivo foi aberto corretamente.
+	status = true;
 
-	  //Número de Amostras do Evento.
-	  fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
-
-	  //Duração do Evento.
-	  fscanf(PtArquivoDeEventos, "%d\n", &Duracao);
-
-	  //Tipo do Evento.
-	  fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
-
-	  //Redimensiona o vetor de amostras do evento.
-	  // Amostras.resize(NumeroDeAmostras);
-
-	  //Recebe as amostras do evento do arquivo.
-	  for (int a = 0; a < (int) NumeroDeAmostras; a++)
-	  {
-		fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
-		//fscanf(PtArquivoDeEventos, "%lf\n", &p[a]);
-	  }
-
-	  //Fecha o Ponteiro do Arquivo de Padrões.
-	  fclose(PtArquivoDeEventos);
-
-	  //Sinaliza se o arquivo foi aberto corretamente.
-	  status = true;
-    }
   }
   else
   {
@@ -1152,9 +1149,14 @@ void __fastcall TFmRna::ListBox2Click(TObject *Sender)
 
 void __fastcall TFmRna::Button3Click(TObject *Sender)
 {
-	//Application->MessageBox(WideString("Função abrir o arquivo de Eventos"), MB_OK);
-//	lerArquivos("padroes/Ruido_PacH2_Tp9-Pz_004238_2048_0ms.pdr");
-	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/Ruido_PacH2_Tp9-Pz_004238_2048_0ms.pdr");
+//    ProcurarArquivo
+
+	ProcurarArquivo = new TOpenDialog(this);
+	ProcurarArquivo->Title="Open a New File";
+	ProcurarArquivo->Execute();
+
+	ShowMessage("Arquivo selecionado:  " + ExtractFileName(ProcurarArquivo->FileName));
+	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName(ProcurarArquivo->FileName));
 }
 //---------------------------------------------------------------------------
 
