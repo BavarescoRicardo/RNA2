@@ -287,7 +287,7 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 			{
 				// insere no array P os valores dos 400 pixels equivalentes
 				// a matriz 20x20 do arquivo aberto.
-				for (k = 0; k < cx; k++)
+				for (k = 0; k < 2; k++)
 				{
 					fscanf(arq_treinamento, "%1f", &p[contNum][k]);
 				}
