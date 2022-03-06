@@ -61,7 +61,12 @@ class TFmRna : public TForm
 	TFastLineSeries *Series4;
 	TPanel *Panel1;
 	TButton *Button3;
-	TOpenDialog *OpenDialog1;
+	TOpenDialog *ProcurarArquivo;
+	TTabSheet *tabs03;
+	TChart *amostrasGraf;
+	TLineSeries *Series5;
+	TButton *btnNorm;
+	TButton *Button5;
 		void __fastcall Button1Click(TObject *Sender);
 		void __fastcall Button2Click(TObject *Sender);
         void __fastcall AtualizaGrafico();
@@ -69,6 +74,8 @@ class TFmRna : public TForm
 	void __fastcall ListBox1Click(TObject *Sender);
 	void __fastcall ListBox2Click(TObject *Sender);
 	void __fastcall Button3Click(TObject *Sender);
+	void __fastcall btnNormClick(TObject *Sender);
+	void __fastcall carregarArquivo(void);
 
 
 	private:	// User declarations

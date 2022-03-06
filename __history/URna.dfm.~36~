@@ -19,7 +19,7 @@ object FmRna: TFmRna
     Top = 8
     Width = 1128
     Height = 509
-    ActivePage = tabs03
+    ActivePage = TabSheet1
     MultiLine = True
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -376,13 +376,14 @@ object FmRna: TFmRna
           Transparency = 7
         end
       end
-      object Button4: TButton
+      object btnNorm: TButton
         Left = 896
         Top = 48
         Width = 175
         Height = 50
         Caption = 'Normalizar amostras'
         TabOrder = 1
+        OnClick = btnNormClick
       end
       object Button5: TButton
         Left = 896

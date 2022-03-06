@@ -13,6 +13,7 @@
 TFmRna *FmRna;
 Thread *MyThread;
 void lerArquivos(AnsiString ArquivoDeEventos);
+void carregarArquivo(void);
 void addAmostraGraph(int NumeroDeAmostras, double* Amostras);
 void normAmostras(int NumeroDeAmostras, double* Amostras);
 
@@ -91,9 +92,9 @@ float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 
 
 
-const int cx = 2048;         // Camada de entrada.
+const int cx = 500;         // Camada de entrada.
 const int c1 = 5;          // Camada Intermediária.
-const int c2 = 1;           // Camada de Saída.
+const int c2 = 2;           // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
 
 float w1[cx*c1]  = {0};     // cx*c1
 float w2[c1*c2]  = {0};     // c1*c2
@@ -140,24 +141,7 @@ float p[10][cx] =
 };
 
 // Valores desejados dos padrões ao final do treinamento.
-float d[10][c2] =
-{
-	/*
-	1.0,	0.0,    0.0,	0.0,	0.0,    0.0,	0.0,    0.0,	0.0,	0.0,
-	0.0,	1.0,	0.0,	0.0,	0.0,    0.0,	0.0,    0.0,	0.0,	0.0,
-	0.0,	0.0,	1.0,	0.0,	0.0,    0.0,	0.0,    0.0,	0.0,	0.0,
-	0.0,	0.0,	0.0,	1.0,	0.0,    0.0,	0.0,    0.0,	0.0,	0.0,
-	0.0,	0.0,	0.0,	0.0,	1.0,    0.0,	0.0,    0.0,	0.0,	0.0,
-	0.0,	0.0,	0.0,	0.0,	0.0,    1.0,	0.0,    0.0,	0.0,	0.0,
-	0.0,	0.0,	0.0,	0.0,	0.0,    0.0,	1.0,    0.0,	0.0,	0.0,
-	0.0,	0.0,	0.0,	0.0,	0.0,    0.0,	0.0,    1.0,	0.0,	0.0,
-	0.0,	0.0,	0.0,	0.0,	0.0,    0.0,	0.0,    0.0,	1.0,	0.0,
-	0.0,	0.0,	0.0,	0.0,	0.0,    0.0,	0.0,    0.0,	0.0,	1.0
-	*/
-
-	0.0,	0.0,    0.0,	0.0,	1.0,
-	0.0,	0.0,    0.0,	1.0,	0.0
-};
+float d[2048][c2]; // Matriz temporaria
 
 
 float v[3][cx] =
@@ -255,7 +239,6 @@ float dv[3][c2] =
 //Método de abertura dos arquivos de eventos.
 void lerArquivos(AnsiString ArquivoDeEventos)
 {
-
   //Declaração do Ponteiro do Arquivo de Eventos.
   FILE *PtArquivoDeEventos;
   const char *recebe_string;
@@ -319,7 +302,8 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 {
 	// Limpar dados do gráfico
-		FmRna->amostrasGraf->Series[0]->Clear();
+	FmRna->amostrasGraf->Series[0]->Clear();
+
 	for (int a = 0; a < (int) NumeroDeAmostras; a++)
 	{
 		// Adicionar ao terceiro grafico
@@ -341,7 +325,7 @@ void normAmostras(int NumeroDeAmostras, double* Amostras)
 				// Multiplicar ou dividir todas as amostras para:   Escalonar
 				if (Amostras != NULL)
 				{
-					p[xx1][a] = ((Amostras[a] + 10) * 0.20);
+					p[xx1][a] = ((Amostras[a] + 10) * 0.10);
 					Amostras[a] = p[xx1][a];
 				}
 
@@ -428,7 +412,7 @@ void __fastcall Thread::Execute()
     /* initialize random weights: */
     srand (time(NULL));
 
-	padroes = 3;                   // Número de padrões a treinar.
+	padroes = 4;                   // Número de padrões a treinar.
 	funcao = 0;                 	// Função Logística(0).
 	taxa_aprendizado = 0.001;    	// Taxa de Aprendizado.
 	precisao_da_randomizacao = 0.01; // Precisão da randomização (0.1, 0.01, 0.001)
@@ -580,6 +564,11 @@ void __fastcall Thread::Execute()
 				soma = 0;
 				for (i = 0; i < cx; i++)
 				{
+                    // rba - Fazer
+					// Chama a função para ler os arquivos      ---     pode ser a função que o giovani passou
+						// Grava temporario no vetor p[] com 2048 valor * apenas 1 linha
+						  // a cada epoca chama a função denovo e só sobrescreve o vetor temporario ai ocupa menos memório
+					carregarArquivo();
 					soma += w1[n] * p[k][i];
 					n += 1;
 				}
@@ -768,20 +757,6 @@ void __fastcall Thread::Execute()
 		erro_medio_quadratico = 0;
 		erro_medio_quadratico_validacao = 0;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	}   // Laço de controle de épocas.
 
 	// Fecha o ponteiro do arquivo de erros de treinamento.
@@ -901,6 +876,9 @@ void __fastcall TFmRna::ListBox1Click(TObject *Sender)
 
 
 	// Formatação dos neurônios da camada 1
+
+	// rba {Todo rba - Ajustar  condições para dois neuronios 00 01 10 11 por camada de saida}
+	// TODO 1  -cImportant :Do
 	if (saidas_formatadas_c1[0] > 0.5)
 		Shape1->Brush->Color = clRed;
 	else
@@ -1184,14 +1162,18 @@ void __fastcall TFmRna::ListBox2Click(TObject *Sender)
 void __fastcall TFmRna::Button3Click(TObject *Sender)
 {
 //    ProcurarArquivo
-
 	ProcurarArquivo = new TOpenDialog(this);
 	ProcurarArquivo->Title="Open a New File";
 	ProcurarArquivo->Execute();
 
-    amostrasGraf->Series[0]->Clear();
+	amostrasGraf->Series[0]->Clear();
 	ShowMessage("Arquivo selecionado:  " + ExtractFileName(ProcurarArquivo->FileName));
 	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName(ProcurarArquivo->FileName));
+}
+
+void carregarArquivo(TObject *Sender)
+{
+	TFmRna::Button3Click(TFmRna);
 }
 //---------------------------------------------------------------------------
 
@@ -1203,7 +1185,7 @@ void __fastcall TFmRna::btnNormClick(TObject *Sender)
         ShowMessage("Primeiro deve carregar um arquivo e treinar rede");
         return;
 	}
-    normAmostras(NumeroDeAmostras, Amostras);
+	normAmostras(NumeroDeAmostras, Amostras);
 }
 //---------------------------------------------------------------------------
 
