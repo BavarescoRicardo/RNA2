@@ -92,7 +92,7 @@ float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 
 
 
-const int cx = 500;         // Camada de entrada.
+const int cx = 10;         // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
 const int c1 = 5;          // Camada Intermediária.
 const int c2 = 2;           // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
 

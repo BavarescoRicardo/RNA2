@@ -13,6 +13,7 @@
 TFmRna *FmRna;
 Thread *MyThread;
 void lerArquivos(AnsiString ArquivoDeEventos);
+void carregarArquivo(void);
 void addAmostraGraph(int NumeroDeAmostras, double* Amostras);
 void normAmostras(int NumeroDeAmostras, double* Amostras);
 
@@ -248,7 +249,7 @@ void lerArquivos(AnsiString ArquivoDeEventos)
   //Verifica se o arquivo existe antes de abrir.
   if (FileExists(ArquivoDeEventos))
   {
-	ShowMessage("Encontrou e conseguiu abrir o arquivo dentro do metodo");
+	// ShowMessage("Encontrou e conseguiu abrir o arquivo dentro do metodo");
 	//Abertura do Arquivo de Padrões.
 	FILE *arq_treinamento;
 	double* Amostras2;
@@ -1170,9 +1171,9 @@ void __fastcall TFmRna::Button3Click(TObject *Sender)
 	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName(ProcurarArquivo->FileName));
 }
 
-void __fastcall carregarArquivo(TObject *Sender)
+void carregarArquivo(void)
 {
-	TFmRna::Button3Click(NULL);
+    lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName("EspículaOnda_PacH3_T10-Pz_003407_2048_96ms.pdr"));
 }
 //---------------------------------------------------------------------------
 
