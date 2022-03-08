@@ -13,7 +13,7 @@
 TFmRna *FmRna;
 Thread *MyThread;
 void lerArquivos(AnsiString ArquivoDeEventos);
-void carregarArquivo(void);
+void carregarArquivo(int x);
 void addAmostraGraph(int NumeroDeAmostras, double* Amostras);
 void normAmostras(int NumeroDeAmostras, double* Amostras);
 
@@ -106,6 +106,7 @@ int NumeroDeAmostras;
 char Tipo;
 int Duracao;
 double* Amostras;
+Boolean testar = false;
 
 float entrada_camada1[c1] = {0}, saida_camada1[c1] = {0}, erro_camada1[c1] = {0};
 float entrada_camada2[c2] = {0}, saida_camada2[c2] = {0}, erro_camada2[c2] = {0};
@@ -240,39 +241,49 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 
 void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 {
-	// Limpar dados do gráfico
-	FmRna->amostrasGraf->Series[0]->Clear();
-
-	for (int a = 0; a < (int) NumeroDeAmostras; a++)
+	if (testar)
 	{
-		// Adicionar ao terceiro grafico
-		FmRna->amostrasGraf->Series[0]->AddY(Amostras[a]);
-	}
+         normAmostras(NumeroDeAmostras, Amostras);
+		// Limpar dados do gráfico
+		FmRna->Chart2->Series[0]->Clear();
 
+		for (unsigned int a = 0; a < 100; a++)
+		{
+			FmRna->Chart2->Series[0]->AddY(Amostras[a]);
+		}
+
+			FmRna->Chart2->Refresh();
+			FmRna->ListBox1Click(FmRna);
+	} else
+	{
+		// Limpar dados do gráfico
+		FmRna->amostrasGraf->Series[0]->Clear();
+
+		for (int a = 0; a < (int) NumeroDeAmostras; a++)
+		{
+			// Adicionar ao terceiro grafico
+			FmRna->amostrasGraf->Series[0]->AddY(Amostras[a]);
+		}
+	}
 }
 
 void normAmostras(int NumeroDeAmostras, double* Amostras)
 {
-	for(int xx1 = 0; xx1 < padroes; xx1++)
+	// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
+	for (int a = 0; a < NumeroDeAmostras; a++)
 	{
-		// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
-		for (int a = 0; a < (int) NumeroDeAmostras; a++)
-		{
-			// Normalizar valores amostras para ficar entre -1 e 1
-			// Possíveis formas de normalizar são:
-				// Somar um numero a todas as amostrar para: 		Deslocar
-				// Multiplicar ou dividir todas as amostras para:   Escalonar
-				if (Amostras != NULL)
-				{
-					p[xx1][a] = ((Amostras[a] + 10) * 0.10);
-					Amostras[a] = p[xx1][a];
-				}
-
-		}
+		// Normalizar valores amostras para ficar entre -1 e 1
+		// Possíveis formas de normalizar são:
+			// Somar um numero a todas as amostrar para: 		Deslocar
+			// Multiplicar ou dividir todas as amostras para:   Escalonar
+			if (Amostras != NULL)
+			{
+				Amostras[a] = ((Amostras[a] + 15) * 0.02);
+			}
 	}
 
         // Plota as amostrar - Normalizadas -  no gráfico
-	addAmostraGraph(NumeroDeAmostras, Amostras);
+//	addAmostraGraph(NumeroDeAmostras, Amostras);
 }
 
 
@@ -357,7 +368,7 @@ void __fastcall Thread::Execute()
 	precisao_da_randomizacao = 0.01; // Precisão da randomização (0.1, 0.01, 0.001)
 	ERRO = 0.0001;              	// Erro mínimo aceitável da rede (se aplicável).
 	MOMENTUM = 0.9;             	// Termo de momentum.
-	epocas = 150;            		// Número máximo de épocas de treinamento.
+	epocas = 25;            		// Número máximo de épocas de treinamento.
 	rnd = 0;                    	// Variável auxiliar para a randomização dos pesos.
 	soma = 0;                   	// Variável auxiliar para a soma das sinapses.
 	erro_medio_quadratico = 0;  	// Variável auxiliar do Erro médio quadrático.
@@ -507,7 +518,7 @@ void __fastcall Thread::Execute()
 					// Chama a função para ler os arquivos      ---     pode ser a função que o giovani passou
 						// Grava temporario no vetor p[] com 2048 valor * apenas 1 linha
 						  // a cada epoca chama a função denovo e só sobrescreve o vetor temporario ai ocupa menos memório
-					carregarArquivo();
+					carregarArquivo(i);
 					soma += w1[n] * p[k][i];
 					n += 1;
 				}
@@ -750,14 +761,6 @@ void __fastcall TFmRna::AtualizaGrafico()
 void __fastcall TFmRna::ListBox1Click(TObject *Sender)
 {
 
-	for (unsigned int a = 0; a < 100; a++)
-	{
-		Chart2->Series[0]->YValues->Value[a] = p[ListBox1->ItemIndex][a];
-	}
-
-	Chart2->Refresh();
-
-
 
 //-----------------------------------------------------------------------------//
 //                   Teste da Rede Neural Após treinamento                     //
@@ -771,7 +774,7 @@ void __fastcall TFmRna::ListBox1Click(TObject *Sender)
 		soma = 0;
 		for (i = 0; i < cx; i++)
 		{
-			soma += w1[n] * p[ListBox1->ItemIndex][i];
+			soma += w1[n] * p[0][i];
 			n += 1;
 		}
 		entrada_camada1[j] = soma;
@@ -819,106 +822,25 @@ void __fastcall TFmRna::ListBox1Click(TObject *Sender)
 	// rba {Todo rba - Ajustar  condições para dois neuronios 00 01 10 11 por camada de saida}
 	// TODO 1  -cImportant :Do
 	if (saidas_formatadas_c1[0] > 0.5)
-		Shape1->Brush->Color = clRed;
+		bit00->Brush->Color = clRed;
 	else
-		Shape1->Brush->Color = clWhite;
+		bit00->Brush->Color = clWhite;
 
 	if (saidas_formatadas_c1[1] > 0.5)
-		Shape2->Brush->Color = clRed;
+		bit01->Brush->Color = clRed;
 	else
-		Shape2->Brush->Color = clWhite;
+		bit01->Brush->Color = clWhite;
 
 	if (saidas_formatadas_c1[2] > 0.5)
-		Shape3->Brush->Color = clRed;
+		bit10->Brush->Color = clRed;
 	else
-		Shape3->Brush->Color = clWhite;
+		bit10->Brush->Color = clWhite;
 
 	if (saidas_formatadas_c1[3] > 0.5)
-		Shape4->Brush->Color = clRed;
+		bit11->Brush->Color = clRed;
 	else
-		Shape4->Brush->Color = clWhite;
+		bit11->Brush->Color = clWhite;
 
-	if (saidas_formatadas_c1[4] > 0.5)
-		Shape5->Brush->Color = clRed;
-	else
-		Shape5->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[5] > 0.5)
-		Shape6->Brush->Color = clRed;
-	else
-		Shape6->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[6] > 0.5)
-		Shape7->Brush->Color = clRed;
-	else
-		Shape7->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[7] > 0.5)
-		Shape8->Brush->Color = clRed;
-	else
-		Shape8->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[8] > 0.5)
-		Shape9->Brush->Color = clRed;
-	else
-		Shape9->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[9] > 0.5)
-		Shape10->Brush->Color = clRed;
-	else
-		Shape10->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[10] > 0.5)
-		Shape11->Brush->Color = clRed;
-	else
-		Shape11->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[11] > 0.5)
-		Shape12->Brush->Color = clRed;
-	else
-		Shape12->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[12] > 0.5)
-		Shape13->Brush->Color = clRed;
-	else
-		Shape13->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[13] > 0.5)
-		Shape14->Brush->Color = clRed;
-	else
-		Shape14->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[14] > 0.5)
-		Shape15->Brush->Color = clRed;
-	else
-		Shape15->Brush->Color = clWhite;
-
-
-	// Formatação dos neurônios da camada 2
-	if (saidas_formatadas_c2[0] > 0.5)
-		Shape16->Brush->Color = clRed;
-	else
-		Shape16->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c2[1] > 0.5)
-		Shape17->Brush->Color = clRed;
-	else
-		Shape17->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c2[2] > 0.5)
-		Shape18->Brush->Color = clRed;
-	else
-		Shape18->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c2[3] > 0.5)
-		Shape19->Brush->Color = clRed;
-	else
-		Shape19->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c2[4] > 0.5)
-		Shape20->Brush->Color = clRed;
-	else
-		Shape20->Brush->Color = clWhite;
 }
 //---------------------------------------------------------------------------
 
@@ -927,7 +849,7 @@ void __fastcall TFmRna::ListBox2Click(TObject *Sender)
 
 	for (unsigned int a = 0; a < 100; a++)
 	{
-		Chart2->Series[0]->YValues->Value[a] = v[ListBox2->ItemIndex][a];
+		Chart2->Series[0]->YValues->Value[a] = v[0][a];
 	}
 
 	Chart2->Refresh();
@@ -946,7 +868,7 @@ void __fastcall TFmRna::ListBox2Click(TObject *Sender)
 		soma = 0;
 		for (i = 0; i < cx; i++)
 		{
-			soma += w1[n] * v[ListBox2->ItemIndex][i];
+			soma += w1[n] * v[0][i];
 			n += 1;
 		}
 		entrada_camada1[j] = soma;
@@ -987,120 +909,13 @@ void __fastcall TFmRna::ListBox2Click(TObject *Sender)
 		}
 
 	}
-
-
-	// Formatação dos neurônios da camada 1
-	if (saidas_formatadas_c1[0] > 0.5)
-		Shape1->Brush->Color = clRed;
-	else
-		Shape1->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[1] > 0.5)
-		Shape2->Brush->Color = clRed;
-	else
-		Shape2->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[2] > 0.5)
-		Shape3->Brush->Color = clRed;
-	else
-		Shape3->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[3] > 0.5)
-		Shape4->Brush->Color = clRed;
-	else
-		Shape4->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[4] > 0.5)
-		Shape5->Brush->Color = clRed;
-	else
-		Shape5->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[5] > 0.5)
-		Shape6->Brush->Color = clRed;
-	else
-		Shape6->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[6] > 0.5)
-		Shape7->Brush->Color = clRed;
-	else
-		Shape7->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[7] > 0.5)
-		Shape8->Brush->Color = clRed;
-	else
-		Shape8->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[8] > 0.5)
-		Shape9->Brush->Color = clRed;
-	else
-		Shape9->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[9] > 0.5)
-		Shape10->Brush->Color = clRed;
-	else
-		Shape10->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[10] > 0.5)
-		Shape11->Brush->Color = clRed;
-	else
-		Shape11->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[11] > 0.5)
-		Shape12->Brush->Color = clRed;
-	else
-		Shape12->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[12] > 0.5)
-		Shape13->Brush->Color = clRed;
-	else
-		Shape13->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[13] > 0.5)
-		Shape14->Brush->Color = clRed;
-	else
-		Shape14->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c1[14] > 0.5)
-		Shape15->Brush->Color = clRed;
-	else
-		Shape15->Brush->Color = clWhite;
-
-
-	// Formatação dos neurônios da camada 2
-	if (saidas_formatadas_c2[0] > 0.5)
-		Shape16->Brush->Color = clRed;
-	else
-		Shape16->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c2[1] > 0.5)
-		Shape17->Brush->Color = clRed;
-	else
-		Shape17->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c2[2] > 0.5)
-		Shape18->Brush->Color = clRed;
-	else
-		Shape18->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c2[3] > 0.5)
-		Shape19->Brush->Color = clRed;
-	else
-		Shape19->Brush->Color = clWhite;
-
-	if (saidas_formatadas_c2[4] > 0.5)
-		Shape20->Brush->Color = clRed;
-	else
-		Shape20->Brush->Color = clWhite;
-
-
-	Chart2->Refresh();
-
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TFmRna::Button3Click(TObject *Sender)
+void __fastcall TFmRna::btnAbrirArquivoClick(TObject *Sender)
 {
 //    ProcurarArquivo
+    testar = true;
 	ProcurarArquivo = new TOpenDialog(this);
 	ProcurarArquivo->Title="Open a New File";
 	ProcurarArquivo->Execute();
@@ -1110,9 +925,12 @@ void __fastcall TFmRna::Button3Click(TObject *Sender)
 	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName(ProcurarArquivo->FileName));
 }
 
-void carregarArquivo(void)
+void carregarArquivo(int x)
 {
-    lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName("EspículaOnda_PacH3_T10-Pz_003407_2048_96ms.pdr"));
+	// lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName("EspículaOnda_PacH3_T10-Pz_003407_2048_96ms.pdr"));
+
+	AnsiString seqarquivo[10]  = {"1", "2", "3", "4","5", "6", "7", "8", "9", "10"};
+	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroesnomemudado/espicula" + seqarquivo[x] + ".pdr");
 }
 //---------------------------------------------------------------------------
 
@@ -1127,4 +945,5 @@ void __fastcall TFmRna::btnNormClick(TObject *Sender)
 	normAmostras(NumeroDeAmostras, Amostras);
 }
 //---------------------------------------------------------------------------
+
 
