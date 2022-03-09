@@ -124,9 +124,13 @@ float p[10][cx] =
 //0.000000,0.356412,0.666012,0.888136,0.993611,0.968583,0.816339,0.556876,0.224271,-0.137790,-0.481753,-0.762442,-0.942990,-0.999684,-0.925077,-0.728969,-0.437116,-0.087851,0.272952,0.597906,0.844328,0.979855,0.986686,0.863923,0.627690,0.309016,-0.050245,-0.402907,-0.702650,-0.910106,-0.998027,-0.954865,-0.786289,-0.514441,-0.175025,0.187379,0.525173,0.793989,0.958521,0.997159,0.904829,0.693656,0.391378,0.037695,-0.320939,-0.637420,-0.870181,-0.988651,-0.977269,-0.837532,-0.587791,-0.260848,0.100355,0.448377,0.737508,0.929774,0.999921,0.938737,0.754257,0.470712,0.125343,-0.236490,-0.567261,-0.823527,-0.971629,-0.992116,-0.882297,-0.656595,-0.344654,0.012554,0.368113,0.675323,0.893835,0.994950,0.965385,0.809025,0.546407,0.212022,-0.150210,-0.492714,-0.770503,-0.947093,-0.999290,-0.920239,-0.720321,-0.425795,-0.075345,0.285002,0.607915,0.850984,0.982284,0.984568,0.857537,0.617876,0.297062,-0.062769,-0.414356,-0.711520,-0.915232,-0.998736
 };
 
-// Valores desejados dos padrões ao final do treinamento.
-float d[2048][c2]; // Matriz temporaria
-
+// Valores desejaos dos padrões ao final do treinamento.
+// Matriz temporaria      		  4 padroes
+float d[4][c2] =
+{
+	0, 0, 1, 1,
+	0, 1, 0, 1
+};
 
 float v[3][cx] =
 {
@@ -243,7 +247,7 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 {
 	if (testar)
 	{
-        normAmostras(NumeroDeAmostras, Amostras);
+         normAmostras(NumeroDeAmostras, Amostras);
 		// Limpar dados do gráfico
 		FmRna->Chart2->Series[0]->Clear();
 
@@ -253,6 +257,7 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 		}
 
 			FmRna->Chart2->Refresh();
+			FmRna->ListBox1Click(FmRna);
 	} else
 	{
 		// Limpar dados do gráfico
@@ -268,26 +273,21 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 
 void normAmostras(int NumeroDeAmostras, double* Amostras)
 {
-	for(int xx1 = 0; xx1 < padroes; xx1++)
+	// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
+	for (int a = 0; a < NumeroDeAmostras; a++)
 	{
-		// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
-		for (int a = 0; a < (int) NumeroDeAmostras; a++)
-		{
-			// Normalizar valores amostras para ficar entre -1 e 1
-			// Possíveis formas de normalizar são:
-				// Somar um numero a todas as amostrar para: 		Deslocar
-				// Multiplicar ou dividir todas as amostras para:   Escalonar
-				if (Amostras != NULL)
-				{
-					p[xx1][a] = ((Amostras[a] + 10) * 0.10);
-					Amostras[a] = p[xx1][a];
-				}
-
-		}
+		// Normalizar valores amostras para ficar entre -1 e 1
+		// Possíveis formas de normalizar são:
+			// Somar um numero a todas as amostrar para: 		Deslocar
+			// Multiplicar ou dividir todas as amostras para:   Escalonar
+			if (Amostras != NULL)
+			{
+				Amostras[a] = ((Amostras[a] + 15) * 0.02);
+			}
 	}
 
         // Plota as amostrar - Normalizadas -  no gráfico
-	addAmostraGraph(NumeroDeAmostras, Amostras);
+//	addAmostraGraph(NumeroDeAmostras, Amostras);
 }
 
 
@@ -372,7 +372,7 @@ void __fastcall Thread::Execute()
 	precisao_da_randomizacao = 0.01; // Precisão da randomização (0.1, 0.01, 0.001)
 	ERRO = 0.0001;              	// Erro mínimo aceitável da rede (se aplicável).
 	MOMENTUM = 0.9;             	// Termo de momentum.
-	epocas = 150;            		// Número máximo de épocas de treinamento.
+	epocas = 25;            		// Número máximo de épocas de treinamento.
 	rnd = 0;                    	// Variável auxiliar para a randomização dos pesos.
 	soma = 0;                   	// Variável auxiliar para a soma das sinapses.
 	erro_medio_quadratico = 0;  	// Variável auxiliar do Erro médio quadrático.

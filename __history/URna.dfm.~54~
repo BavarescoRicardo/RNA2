@@ -19,7 +19,7 @@ object FmRna: TFmRna
     Top = 8
     Width = 1128
     Height = 509
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     MultiLine = True
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -90,28 +90,28 @@ object FmRna: TFmRna
     object TabSheet2: TTabSheet
       Caption = 'Classifica'#231#227'o de padr'#245'es'
       ImageIndex = 1
-      object Shape16: TShape
+      object bit00: TShape
         Left = 1032
         Top = 143
         Width = 25
         Height = 33
         Shape = stCircle
       end
-      object Shape17: TShape
+      object bit01: TShape
         Left = 1032
         Top = 182
         Width = 25
         Height = 33
         Shape = stCircle
       end
-      object Shape18: TShape
+      object bit10: TShape
         Left = 1032
         Top = 221
         Width = 25
         Height = 33
         Shape = stCircle
       end
-      object Shape19: TShape
+      object bit11: TShape
         Left = 1032
         Top = 260
         Width = 25
@@ -193,14 +193,14 @@ object FmRna: TFmRna
           YValues.Order = loNone
         end
       end
-      object Button4: TButton
+      object btnAbrirArquivo: TButton
         Left = 12
         Top = 24
         Width = 97
         Height = 41
         Caption = 'Abrir arquivo'
         TabOrder = 1
-        OnClick = Button3Click
+        OnClick = btnAbrirArquivoClick
       end
     end
     object tabs03: TTabSheet
@@ -240,15 +240,6 @@ object FmRna: TFmRna
         Caption = 'Normalizar amostras'
         TabOrder = 1
         OnClick = btnNormClick
-      end
-      object Button5: TButton
-        Left = 896
-        Top = 240
-        Width = 175
-        Height = 50
-        Caption = 'Transferir amostras para os padr'#245'es'
-        TabOrder = 2
-        WordWrap = True
       end
     end
   end

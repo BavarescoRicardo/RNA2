@@ -90,6 +90,10 @@ object FmRna: TFmRna
     object TabSheet2: TTabSheet
       Caption = 'Classifica'#231#227'o de padr'#245'es'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object bit00: TShape
         Left = 1032
         Top = 143
@@ -206,6 +210,10 @@ object FmRna: TFmRna
     object tabs03: TTabSheet
       Caption = 'Padr'#245'es'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object amostrasGraf: TChart
         Left = 3
         Top = 3

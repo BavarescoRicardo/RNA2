@@ -243,7 +243,7 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 {
 	if (testar)
 	{
-//         normAmostras(NumeroDeAmostras, Amostras);
+         normAmostras(NumeroDeAmostras, Amostras);
 		// Limpar dados do gráfico
 		FmRna->Chart2->Series[0]->Clear();
 
@@ -253,6 +253,7 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 		}
 
 			FmRna->Chart2->Refresh();
+			FmRna->ListBox1Click(FmRna);
 	} else
 	{
 		// Limpar dados do gráfico
@@ -268,26 +269,21 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 
 void normAmostras(int NumeroDeAmostras, double* Amostras)
 {
-	for(int xx1 = 0; xx1 < padroes; xx1++)
+	// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
+	for (int a = 0; a < NumeroDeAmostras; a++)
 	{
-		// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
-		for (int a = 0; a < NumeroDeAmostras; a++)
-		{
-			// Normalizar valores amostras para ficar entre -1 e 1
-			// Possíveis formas de normalizar são:
-				// Somar um numero a todas as amostrar para: 		Deslocar
-				// Multiplicar ou dividir todas as amostras para:   Escalonar
-				if (Amostras != NULL)
-				{
-					p[xx1][a] = ((Amostras[a] + 10) * 0.10);
-					Amostras[a] = p[xx1][a];
-				}
-
-		}
+		// Normalizar valores amostras para ficar entre -1 e 1
+		// Possíveis formas de normalizar são:
+			// Somar um numero a todas as amostrar para: 		Deslocar
+			// Multiplicar ou dividir todas as amostras para:   Escalonar
+			if (Amostras != NULL)
+			{
+				Amostras[a] = ((Amostras[a] + 15) * 0.02);
+			}
 	}
 
         // Plota as amostrar - Normalizadas -  no gráfico
-	addAmostraGraph(NumeroDeAmostras, Amostras);
+//	addAmostraGraph(NumeroDeAmostras, Amostras);
 }
 
 
@@ -372,7 +368,7 @@ void __fastcall Thread::Execute()
 	precisao_da_randomizacao = 0.01; // Precisão da randomização (0.1, 0.01, 0.001)
 	ERRO = 0.0001;              	// Erro mínimo aceitável da rede (se aplicável).
 	MOMENTUM = 0.9;             	// Termo de momentum.
-	epocas = 150;            		// Número máximo de épocas de treinamento.
+	epocas = 25;            		// Número máximo de épocas de treinamento.
 	rnd = 0;                    	// Variável auxiliar para a randomização dos pesos.
 	soma = 0;                   	// Variável auxiliar para a soma das sinapses.
 	erro_medio_quadratico = 0;  	// Variável auxiliar do Erro médio quadrático.
