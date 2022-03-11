@@ -15,7 +15,7 @@ Thread *MyThread;
 void lerArquivos(AnsiString ArquivoDeEventos);
 void carregarArquivo(int x);
 void addAmostraGraph(int NumeroDeAmostras, double* Amostras);
-void normAmostras(int NumeroDeAmostras, double* Amostras);
+float normAmostras(int NumeroDeAmostras, double* Amostras);
 
 
 
@@ -54,11 +54,11 @@ float derivada(float net, int funcao, float a)
 {
 
     if (!funcao){
-    // Derivada da Função Logística
+	// Derivada da Função Logística
     /*
                     1                       1
       y(n) = --------------- * ( 1 - --------------- )
-             1 - exp(-a.net)         1 - exp(-a.net)
+			 1 - exp(-a.net)         1 - exp(-a.net)
      */
 
         return( (1.0 / (1.0 + exp(-a * net))) * (1.0 - (1.0 / (1.0 + exp(-a * net)))) );
@@ -92,7 +92,7 @@ float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 
 
 
-const int cx = 10;         // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
+const int cx = 512;         // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
 const int c1 = 5;          // Camada Intermediária.
 const int c2 = 2;           // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
 
@@ -116,7 +116,7 @@ int saidas_formatadas_c1[c1] = {0};
 int saidas_formatadas_c2[c2] = {0};
 
  // Padrões de Entrada da Rede.
-float p[10][cx] =
+float p[cx] =
 {
 //sinal 1 Hz
 0.000000,0.062791,0.125333,0.187381,0.248690,0.309017,0.368125,0.425779,0.481754,0.535827,0.587785,0.637424,0.684547,0.728969,0.770513,0.809017,0.844328,0.876307,0.904827,0.929777,0.951057,0.968583,0.982287,0.992115,0.998027,1.000000,0.998027,0.992115,0.982287,0.968583,0.951057,0.929777,0.904827,0.876307,0.844328,0.809017,0.770513,0.728969,0.684547,0.637424,0.587786,0.535827,0.481754,0.425780,0.368125,0.309018,0.248691,0.187382,0.125334,0.062792,0.000001,-0.062789,-0.125332,-0.187380,-0.248689,-0.309016,-0.368123,-0.425778,-0.481752,-0.535825,-0.587784,-0.637423,-0.684546,-0.728967,-0.770512,-0.809016,-0.844327,-0.876306,-0.904826,-0.929776,-0.951056,-0.968583,-0.982287,-0.992114,-0.998027,-1.000000,-0.998027,-0.992115,-0.982288,-0.968584,-0.951057,-0.929778,-0.904828,-0.876308,-0.844330,-0.809019,-0.770515,-0.728971,-0.684549,-0.637427,-0.587788,-0.535830,-0.481757,-0.425783,-0.368128,-0.309020,-0.248693,-0.187385,-0.125337,-0.062794
@@ -128,12 +128,15 @@ float p[10][cx] =
 // Matriz temporaria      		  4 padroes
 float d[4][c2] =
 {
-	0, 0, 1, 1,
-	0, 1, 0, 1
+	0, 0,
+	0, 1,
+	1, 0,
+	1, 1
 };
 
 float v[3][cx] =
 {
+/*
 //1.2
 0.000000, 0.075327, 0.150226,
 //1.6
@@ -148,6 +151,7 @@ float v[3][cx] =
 0.000000, 0.193549, 0.379779,
 //3.5
 0.000000, 0.218143, 0.425779,
+*/
 //3.7
 0.000000, 0.230389, 0.448383,
 //4.2
@@ -155,8 +159,8 @@ float v[3][cx] =
 //4.4
 0.000000, 0.272952, 0.525175
 };
-
-
+//
+//
 // Valores desejados dos padrões ao final do treinamento.
 float dv[3][c2] =
 {
@@ -217,9 +221,11 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 	Amostras = new double[NumeroDeAmostras];
 
 	//Recebe as amostras do evento do arquivo.
-	for (int a = 0; a < (int) NumeroDeAmostras; a++)
+	for (int a = 0; a < 2048; a++)
 	{
-		fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
+		 fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
+  //		fseek ( PtArquivoDeEventos, a , SEEK_SET );
+//		fget(Amostras[a], 10, PtArquivoDeEventos);
 	}
 
 	//Fecha o Ponteiro do Arquivo de Padrões.
@@ -251,7 +257,7 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 		// Limpar dados do gráfico
 		FmRna->Chart2->Series[0]->Clear();
 
-		for (unsigned int a = 0; a < 100; a++)
+		for (unsigned int a = 768; a < 1280; a++)
 		{
 			FmRna->Chart2->Series[0]->AddY(Amostras[a]);
 		}
@@ -263,7 +269,7 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 		// Limpar dados do gráfico
 		FmRna->amostrasGraf->Series[0]->Clear();
 
-		for (int a = 0; a < (int) NumeroDeAmostras; a++)
+		for (int a = 768; a < 1280; a++)
 		{
 			// Adicionar ao terceiro grafico
 			FmRna->amostrasGraf->Series[0]->AddY(Amostras[a]);
@@ -271,19 +277,26 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 	}
 }
 
-void normAmostras(int NumeroDeAmostras, double* Amostras)
+float normAmostras(int NumeroDeAmostras, double* Amostras)
 {
 	// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
-	for (int a = 0; a < NumeroDeAmostras; a++)
+	for (int a = 768; a < 1280; a++)
 	{
 		// Normalizar valores amostras para ficar entre -1 e 1
 		// Possíveis formas de normalizar são:
 			// Somar um numero a todas as amostrar para: 		Deslocar
 			// Multiplicar ou dividir todas as amostras para:   Escalonar
-			if (Amostras != NULL)
-			{
-				Amostras[a] = ((Amostras[a] + 15) * 0.02);
-			}
+//			if (Amostras != NULL)
+//			{
+//				Amostras[a] = ((Amostras[a] + 15) * 0.02);
+//			}
+  // x       - amostra do sinal a ser normalizado.
+  // in_min  - Limite inferior do sinal de entrada.
+  // in_max  - Limite superior do sinal de entrada.
+  // out_min - Limite inferior do sinal de saída (normalizado).
+  // out_max - Limite superior do sinal de saída (normalizado).
+			float otoa = Amostras[a];
+		 p[a] = (otoa - 0.05) * (0.05 - 0.05) / (0.05 - 0.05) + 0.05;
 	}
 
         // Plota as amostrar - Normalizadas -  no gráfico
@@ -468,7 +481,7 @@ void __fastcall Thread::Execute()
 	{
 		for (j = 0; j < cx; j++)
 		{
-			fprintf(fp,"%10.2f\t",p[i][j]);
+			fprintf(fp,"%10.2f\t",p[j]);
 		}
 		fprintf(fp,"\n");
 	}
@@ -523,7 +536,7 @@ void __fastcall Thread::Execute()
 						// Grava temporario no vetor p[] com 2048 valor * apenas 1 linha
 						  // a cada epoca chama a função denovo e só sobrescreve o vetor temporario ai ocupa menos memório
 					carregarArquivo(i);
-					soma += w1[n] * p[k][i];
+					soma += w1[n] * p[i];
 					n += 1;
 				}
 				entrada_camada1[j] = soma;
@@ -607,7 +620,7 @@ void __fastcall Thread::Execute()
 				n = 0;
 				for (j = 0; j < c1; j++)
 				{
-					dw1[n + i] = taxa_aprendizado * p[k][i] * erro_camada1[j] + (MOMENTUM * dw1[n + i]);
+					dw1[n + i] = taxa_aprendizado * p[i] * erro_camada1[j] + (MOMENTUM * dw1[n + i]);
 					w1[n + i] = w1[n + i] + dw1[n + i];
 					n += cx;
 				}
@@ -778,7 +791,7 @@ void __fastcall TFmRna::ListBox1Click(TObject *Sender)
 		soma = 0;
 		for (i = 0; i < cx; i++)
 		{
-			soma += w1[n] * p[0][i];
+			soma += w1[n] * p[i];
 			n += 1;
 		}
 		entrada_camada1[j] = soma;
