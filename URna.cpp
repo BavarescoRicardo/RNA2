@@ -74,7 +74,7 @@ float derivada(float net, int funcao, float a)
 
     */
 
-        return( 1.0 - pow((exp(a * net) - exp(-a * net)) / (exp(a * net) + exp(-a * net)),2) );
+		return( 1.0 - pow((exp(a * net) - exp(-a * net)) / (exp(a * net) + exp(-a * net)),2) );
     }
 }
 
@@ -82,8 +82,7 @@ float derivada(float net, int funcao, float a)
 
 unsigned long contador = 0, epocas = 0;
 
-int a = 0, b = 0, i = 0, j = 0, k = 0, n = 0, padroes = 0, fim = 0, funcao = 0;
-float rnd = 0, soma = 0, taxa_aprendizado = 0, MOMENTUM = 0, precisao_da_randomizacao = 0;
+int a = 0, b = 0, i = 0, j = 0, k = 0, n = 0, padroes = 0, fim = 0, funcao = 0;                 float rnd = 0, soma = 0, taxa_aprendizado = 0, MOMENTUM = 0, precisao_da_randomizacao = 0;
 float ERRO = 0, erro_medio_quadratico = 0, erro_quadratico = 0, threshold = 0;
 float curva = 0;
 
@@ -253,13 +252,14 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 {
 	if (testar)
 	{
-         normAmostras(NumeroDeAmostras, Amostras);
+		normAmostras(NumeroDeAmostras, Amostras);
+
 		// Limpar dados do gráfico
 		FmRna->Chart2->Series[0]->Clear();
 
-		for (unsigned int a = 768; a < 1280; a++)
+		for (unsigned int a = 0; a < 512; a++)
 		{
-			FmRna->Chart2->Series[0]->AddY(Amostras[a]);
+			FmRna->Chart2->Series[0]->AddY(p[a]);
 		}
 
 			FmRna->Chart2->Refresh();
@@ -279,8 +279,25 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 
 float normAmostras(int NumeroDeAmostras, double* Amostras)
 {
+	// Recortar trecho do vetor de 512 amostras
+	double min, max = Amostras[515];
+
+	for ((i = 0); i < 512; i++) {
+
+		if(Amostras[i] < min){
+			min = (Amostras[i + 515]);
+		}
+
+		if(Amostras[i] > max){
+			max = (Amostras[i + 515]);
+		}
+
+		p[i] = (Amostras[i + 515]);
+	}
+
+
 	// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
-	for (int a = 768; a < 1280; a++)
+	for (int a = 0; a < 511; a++)
 	{
 		// Normalizar valores amostras para ficar entre -1 e 1
 		// Possíveis formas de normalizar são:
@@ -295,8 +312,16 @@ float normAmostras(int NumeroDeAmostras, double* Amostras)
   // in_max  - Limite superior do sinal de entrada.
   // out_min - Limite inferior do sinal de saída (normalizado).
   // out_max - Limite superior do sinal de saída (normalizado).
-			float otoa = Amostras[a];
-		 p[a] = (otoa - 0.05) * (0.05 - 0.05) / (0.05 - 0.05) + 0.05;
+
+		 // p[a] = ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+		 // p[a] = (Amostras[a + 768] / 8);
+		 if ((min > 0)) {
+			 p[a] = (p[a] / max);
+		 }else {
+//			 p[a] = ((p[a] - min/2) / (max - min));
+			p[a] = (p[a] / max);
+         }
+
 	}
 
         // Plota as amostrar - Normalizadas -  no gráfico
@@ -316,10 +341,10 @@ __fastcall TFmRna::TFmRna(TComponent* Owner)
 void __fastcall TFmRna::FormCreate(TObject *Sender)
 {
 	// Redimensiona o valor máximo do eixo x com o tamanho da tela desejada.
-	Chart2->BottomAxis->Maximum = 99;
+	Chart2->BottomAxis->Maximum = 550;
 
 	// Expande o gráfico para comportar a quantidade de amostras contidas em max_tela.
-	for (unsigned int a = 0; a < 100; a++)
+	for (unsigned int a = 0; a < 550; a++)
 	{
 		Chart2->Series[0]->AddY(0);
 	}
@@ -535,7 +560,7 @@ void __fastcall Thread::Execute()
 					// Chama a função para ler os arquivos      ---     pode ser a função que o giovani passou
 						// Grava temporario no vetor p[] com 2048 valor * apenas 1 linha
 						  // a cada epoca chama a função denovo e só sobrescreve o vetor temporario ai ocupa menos memório
-					carregarArquivo(i);
+					// carregarArquivo(i);
 					soma += w1[n] * p[i];
 					n += 1;
 				}
@@ -864,7 +889,7 @@ void __fastcall TFmRna::ListBox1Click(TObject *Sender)
 void __fastcall TFmRna::ListBox2Click(TObject *Sender)
 {
 
-	for (unsigned int a = 0; a < 100; a++)
+	for (unsigned int a = 0; a < 550; a++)
 	{
 		Chart2->Series[0]->YValues->Value[a] = v[0][a];
 	}

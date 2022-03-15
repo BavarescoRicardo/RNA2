@@ -19,7 +19,7 @@ object FmRna: TFmRna
     Top = 8
     Width = 1128
     Height = 509
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     MultiLine = True
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -33,6 +33,9 @@ object FmRna: TFmRna
         Title.Font.Color = clNavy
         Title.Text.Strings = (
           'Curva de Treinamento da Rede Neural')
+        BottomAxis.Automatic = False
+        BottomAxis.AutomaticMaximum = False
+        BottomAxis.Maximum = 550.000000000000000000
         BottomAxis.MinimumOffset = 3
         LeftAxis.MinimumOffset = 5
         View3D = False
@@ -90,10 +93,6 @@ object FmRna: TFmRna
     object TabSheet2: TTabSheet
       Caption = 'Classifica'#231#227'o de padr'#245'es'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object bit00: TShape
         Left = 1032
         Top = 143
@@ -167,7 +166,8 @@ object FmRna: TFmRna
           'TChart')
         BottomAxis.Automatic = False
         BottomAxis.AutomaticMaximum = False
-        BottomAxis.Maximum = 99.000000000000000000
+        BottomAxis.Maximum = 550.000000000000000000
+        BottomAxis.PositionUnits = muPixels
         LeftAxis.Automatic = False
         LeftAxis.AutomaticMaximum = False
         LeftAxis.AutomaticMinimum = False
@@ -210,10 +210,6 @@ object FmRna: TFmRna
     object tabs03: TTabSheet
       Caption = 'Padr'#245'es'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object amostrasGraf: TChart
         Left = 3
         Top = 3
