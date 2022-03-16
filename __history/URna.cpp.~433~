@@ -257,9 +257,9 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 		// Limpar dados do gráfico
 		FmRna->Chart2->Series[0]->Clear();
 
-		for (unsigned int a = 768; a < 1280; a++)
+		for (unsigned int a = 0; a < 512; a++)
 		{
-			FmRna->Chart2->Series[0]->AddY(Amostras[a]);
+			FmRna->Chart2->Series[0]->AddY(p[a]);
 		}
 
 			FmRna->Chart2->Refresh();
@@ -280,19 +280,21 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 float normAmostras(int NumeroDeAmostras, double* Amostras)
 {
 	// Recortar trecho do vetor de 512 amostras
-	double min, max = Amostras[a + 515];
+	double min, max = Amostras[515];
 
 	for ((i = 0); i < 512; i++) {
-		if(Amostras[a] < min)
-			min = (Amostras[a + 515]);
 
-		if(Amostras[a] > max)
-			max = (Amostras[a + 515]);
+		if(Amostras[i] < min){
+			min = (Amostras[i + 515]);
+		}
 
-		p[a] = (Amostras[a + 515]);
+		if(Amostras[i] > max){
+			max = (Amostras[i + 515]);
+		}
+
+		p[i] = (Amostras[i + 515]);
 	}
-	ShowMessage(max);
-	ShowMessage(min);
+
 
 	// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
 	for (int a = 0; a < 511; a++)
@@ -313,7 +315,13 @@ float normAmostras(int NumeroDeAmostras, double* Amostras)
 
 		 // p[a] = ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 		 // p[a] = (Amostras[a + 768] / 8);
-		 p[a] = (p[a] + min) / (max + min);
+		 if ((min > 0)) {
+			 p[a] = (p[a] / max);
+		 }else {
+//			 p[a] = ((p[a] - min/2) / (max - min));
+			p[a] = (p[a] / max);
+         }
+
 	}
 
         // Plota as amostrar - Normalizadas -  no gráfico
@@ -333,10 +341,10 @@ __fastcall TFmRna::TFmRna(TComponent* Owner)
 void __fastcall TFmRna::FormCreate(TObject *Sender)
 {
 	// Redimensiona o valor máximo do eixo x com o tamanho da tela desejada.
-	Chart2->BottomAxis->Maximum = 99;
+	Chart2->BottomAxis->Maximum = 550;
 
 	// Expande o gráfico para comportar a quantidade de amostras contidas em max_tela.
-	for (unsigned int a = 0; a < 100; a++)
+	for (unsigned int a = 0; a < 550; a++)
 	{
 		Chart2->Series[0]->AddY(0);
 	}
@@ -881,7 +889,7 @@ void __fastcall TFmRna::ListBox1Click(TObject *Sender)
 void __fastcall TFmRna::ListBox2Click(TObject *Sender)
 {
 
-	for (unsigned int a = 0; a < 100; a++)
+	for (unsigned int a = 0; a < 550; a++)
 	{
 		Chart2->Series[0]->YValues->Value[a] = v[0][a];
 	}
@@ -964,6 +972,9 @@ void carregarArquivo(int x)
 	// lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName("EspículaOnda_PacH3_T10-Pz_003407_2048_96ms.pdr"));
 
 	AnsiString seqarquivo[10]  = {"1", "2", "3", "4","5", "6", "7", "8", "9", "10"};
+	if (x > 9) {
+	        x = 0;
+	}
 	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroesnomemudado/espicula" + seqarquivo[x] + ".pdr");
 }
 //---------------------------------------------------------------------------

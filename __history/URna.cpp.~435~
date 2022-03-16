@@ -90,9 +90,9 @@ int padroes_validacao = 0;
 float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 
 
-
-const int cx = 512;         // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
-const int c1 = 5;          // Camada Intermediária.
+   // cx deve ser 512
+const int cx = 112;         // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
+const int c1 = 2;          // Camada Intermediária.
 const int c2 = 2;           // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
 
 float w1[cx*c1]  = {0};     // cx*c1
@@ -257,9 +257,9 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 		// Limpar dados do gráfico
 		FmRna->Chart2->Series[0]->Clear();
 
-		for (unsigned int a = 768; a < 1280; a++)
+		for (unsigned int a = 0; a < 512; a++)
 		{
-			FmRna->Chart2->Series[0]->AddY(Amostras[a]);
+			FmRna->Chart2->Series[0]->AddY(p[a]);
 		}
 
 			FmRna->Chart2->Refresh();
@@ -316,9 +316,10 @@ float normAmostras(int NumeroDeAmostras, double* Amostras)
 		 // p[a] = ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 		 // p[a] = (Amostras[a + 768] / 8);
 		 if ((min > 0)) {
-			 p[a] = (p[a] + min) / (max + min);
+			 p[a] = (p[a] / max);
 		 }else {
-             p[a] = (p[a] - min) / max;
+//			 p[a] = ((p[a] - min/2) / (max - min));
+			p[a] = (p[a] / max);
          }
 
 	}
@@ -340,10 +341,10 @@ __fastcall TFmRna::TFmRna(TComponent* Owner)
 void __fastcall TFmRna::FormCreate(TObject *Sender)
 {
 	// Redimensiona o valor máximo do eixo x com o tamanho da tela desejada.
-	Chart2->BottomAxis->Maximum = 99;
+	Chart2->BottomAxis->Maximum = 550;
 
 	// Expande o gráfico para comportar a quantidade de amostras contidas em max_tela.
-	for (unsigned int a = 0; a < 100; a++)
+	for (unsigned int a = 0; a < 550; a++)
 	{
 		Chart2->Series[0]->AddY(0);
 	}
@@ -888,7 +889,7 @@ void __fastcall TFmRna::ListBox1Click(TObject *Sender)
 void __fastcall TFmRna::ListBox2Click(TObject *Sender)
 {
 
-	for (unsigned int a = 0; a < 100; a++)
+	for (unsigned int a = 0; a < 550; a++)
 	{
 		Chart2->Series[0]->YValues->Value[a] = v[0][a];
 	}
@@ -971,6 +972,9 @@ void carregarArquivo(int x)
 	// lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName("EspículaOnda_PacH3_T10-Pz_003407_2048_96ms.pdr"));
 
 	AnsiString seqarquivo[10]  = {"1", "2", "3", "4","5", "6", "7", "8", "9", "10"};
+	if (x > 9) {
+	        x = 0;
+	}
 	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroesnomemudado/espicula" + seqarquivo[x] + ".pdr");
 }
 //---------------------------------------------------------------------------
