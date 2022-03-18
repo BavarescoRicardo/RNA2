@@ -90,9 +90,9 @@ int padroes_validacao = 0;
 float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 
 
-
-const int cx = 512;         // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
-const int c1 = 5;          // Camada Intermediária.
+   // cx deve ser 512
+const int cx = 20;         // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
+const int c1 = 1;          // Camada Intermediária.
 const int c2 = 2;           // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
 
 float w1[cx*c1]  = {0};     // cx*c1
@@ -115,13 +115,7 @@ int saidas_formatadas_c1[c1] = {0};
 int saidas_formatadas_c2[c2] = {0};
 
  // Padrões de Entrada da Rede.
-float p[cx] =
-{
-//sinal 1 Hz
-0.000000,0.062791,0.125333,0.187381,0.248690,0.309017,0.368125,0.425779,0.481754,0.535827,0.587785,0.637424,0.684547,0.728969,0.770513,0.809017,0.844328,0.876307,0.904827,0.929777,0.951057,0.968583,0.982287,0.992115,0.998027,1.000000,0.998027,0.992115,0.982287,0.968583,0.951057,0.929777,0.904827,0.876307,0.844328,0.809017,0.770513,0.728969,0.684547,0.637424,0.587786,0.535827,0.481754,0.425780,0.368125,0.309018,0.248691,0.187382,0.125334,0.062792,0.000001,-0.062789,-0.125332,-0.187380,-0.248689,-0.309016,-0.368123,-0.425778,-0.481752,-0.535825,-0.587784,-0.637423,-0.684546,-0.728967,-0.770512,-0.809016,-0.844327,-0.876306,-0.904826,-0.929776,-0.951056,-0.968583,-0.982287,-0.992114,-0.998027,-1.000000,-0.998027,-0.992115,-0.982288,-0.968584,-0.951057,-0.929778,-0.904828,-0.876308,-0.844330,-0.809019,-0.770515,-0.728971,-0.684549,-0.637427,-0.587788,-0.535830,-0.481757,-0.425783,-0.368128,-0.309020,-0.248693,-0.187385,-0.125337,-0.062794
-//sinal 2 H
-//0.000000,0.356412,0.666012,0.888136,0.993611,0.968583,0.816339,0.556876,0.224271,-0.137790,-0.481753,-0.762442,-0.942990,-0.999684,-0.925077,-0.728969,-0.437116,-0.087851,0.272952,0.597906,0.844328,0.979855,0.986686,0.863923,0.627690,0.309016,-0.050245,-0.402907,-0.702650,-0.910106,-0.998027,-0.954865,-0.786289,-0.514441,-0.175025,0.187379,0.525173,0.793989,0.958521,0.997159,0.904829,0.693656,0.391378,0.037695,-0.320939,-0.637420,-0.870181,-0.988651,-0.977269,-0.837532,-0.587791,-0.260848,0.100355,0.448377,0.737508,0.929774,0.999921,0.938737,0.754257,0.470712,0.125343,-0.236490,-0.567261,-0.823527,-0.971629,-0.992116,-0.882297,-0.656595,-0.344654,0.012554,0.368113,0.675323,0.893835,0.994950,0.965385,0.809025,0.546407,0.212022,-0.150210,-0.492714,-0.770503,-0.947093,-0.999290,-0.920239,-0.720321,-0.425795,-0.075345,0.285002,0.607915,0.850984,0.982284,0.984568,0.857537,0.617876,0.297062,-0.062769,-0.414356,-0.711520,-0.915232,-0.998736
-};
+float p[520] = {0};
 
 // Valores desejaos dos padrões ao final do treinamento.
 // Matriz temporaria      		  4 padroes
@@ -207,7 +201,7 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 	PtArquivoDeEventos = fopen(APath.c_str() ,"rt");
 
 	//Número de Amostras do Evento.
-	fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
+//	fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
 
 	//Duração do Evento.
 	fscanf(PtArquivoDeEventos, "%d\n", &Duracao);
@@ -217,7 +211,7 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 
 	//Redimensiona o vetor de amostras do evento.
 	//Amostras.resize(NumeroDeAmostras);
-	Amostras = new double[NumeroDeAmostras];
+	Amostras = new double[2048];
 
 	//Recebe as amostras do evento do arquivo.
 	for (int a = 0; a < 2048; a++)
@@ -252,18 +246,19 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 {
 	if (testar)
 	{
-		normAmostras(NumeroDeAmostras, Amostras);
+		//normAmostras(NumeroDeAmostras, Amostras);
 
 		// Limpar dados do gráfico
 		FmRna->Chart2->Series[0]->Clear();
 
 		for (unsigned int a = 0; a < 512; a++)
 		{
-			FmRna->Chart2->Series[0]->AddY(p[a]);
+			FmRna->Chart2->Series[0]->AddY(Amostras[a]);
+            ShowMessage(Amostras[a]);
 		}
 
-			FmRna->Chart2->Refresh();
-			FmRna->ListBox1Click(FmRna);
+		FmRna->Chart2->Refresh();
+		FmRna->ListBox1Click(FmRna);
 	} else
 	{
 		// Limpar dados do gráfico
@@ -316,9 +311,10 @@ float normAmostras(int NumeroDeAmostras, double* Amostras)
 		 // p[a] = ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 		 // p[a] = (Amostras[a + 768] / 8);
 		 if ((min > 0)) {
-			 p[a] = ((p[a] + (min - (min/2))) / (max + min));
+			 p[a] = (p[a] / max);
 		 }else {
-			 p[a] = ((p[a] - (min + (min/2))) / (max - min));
+//			 p[a] = ((p[a] - min/2) / (max - min));
+			p[a] = (p[a] / max);
          }
 
 	}
@@ -340,10 +336,10 @@ __fastcall TFmRna::TFmRna(TComponent* Owner)
 void __fastcall TFmRna::FormCreate(TObject *Sender)
 {
 	// Redimensiona o valor máximo do eixo x com o tamanho da tela desejada.
-	Chart2->BottomAxis->Maximum = 550;
+	Chart2->BottomAxis->Maximum = 250;
 
 	// Expande o gráfico para comportar a quantidade de amostras contidas em max_tela.
-	for (unsigned int a = 0; a < 550; a++)
+	for (unsigned int a = 0; a < 250; a++)
 	{
 		Chart2->Series[0]->AddY(0);
 	}
@@ -971,6 +967,9 @@ void carregarArquivo(int x)
 	// lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName("EspículaOnda_PacH3_T10-Pz_003407_2048_96ms.pdr"));
 
 	AnsiString seqarquivo[10]  = {"1", "2", "3", "4","5", "6", "7", "8", "9", "10"};
+	if (x > 9) {
+	        x = 0;
+	}
 	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroesnomemudado/espicula" + seqarquivo[x] + ".pdr");
 }
 //---------------------------------------------------------------------------

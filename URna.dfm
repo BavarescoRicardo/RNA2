@@ -35,7 +35,7 @@ object FmRna: TFmRna
           'Curva de Treinamento da Rede Neural')
         BottomAxis.Automatic = False
         BottomAxis.AutomaticMaximum = False
-        BottomAxis.Maximum = 550.000000000000000000
+        BottomAxis.Maximum = 250.000000000000000000
         BottomAxis.MinimumOffset = 3
         LeftAxis.MinimumOffset = 5
         View3D = False
@@ -210,10 +210,6 @@ object FmRna: TFmRna
     object tabs03: TTabSheet
       Caption = 'Padr'#245'es'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object amostrasGraf: TChart
         Left = 3
         Top = 3

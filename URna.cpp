@@ -14,8 +14,8 @@ TFmRna *FmRna;
 Thread *MyThread;
 void lerArquivos(AnsiString ArquivoDeEventos);
 void carregarArquivo(int x);
-void addAmostraGraph(int NumeroDeAmostras, double* Amostras);
-float normAmostras(int NumeroDeAmostras, double* Amostras);
+void addAmostraGraph(int NumeroDeAmostras, float* Amostras);
+float normAmostras(int NumeroDeAmostras, float* Amostras);
 
 
 
@@ -91,7 +91,7 @@ float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 
 
    // cx deve ser 512
-const int cx = 100;         // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
+const int cx = 20;         // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
 const int c1 = 1;          // Camada Intermediária.
 const int c2 = 2;           // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
 
@@ -104,7 +104,7 @@ AnsiString NomeDoArquivo;
 int NumeroDeAmostras;
 char Tipo;
 int Duracao;
-double* Amostras;
+float* Amostras;
 Boolean testar = false;
 
 float entrada_camada1[c1] = {0}, saida_camada1[c1] = {0}, erro_camada1[c1] = {0};
@@ -115,7 +115,7 @@ int saidas_formatadas_c1[c1] = {0};
 int saidas_formatadas_c2[c2] = {0};
 
  // Padrões de Entrada da Rede.
-float p[cx] = {0};
+float p[520] = {0};
 
 // Valores desejaos dos padrões ao final do treinamento.
 // Matriz temporaria      		  4 padroes
@@ -193,7 +193,7 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 	// ShowMessage("Encontrou e conseguiu abrir o arquivo dentro do metodo");
 	//Abertura do Arquivo de Padrões.
 	FILE *arq_treinamento;
-	double* Amostras2;
+
 	int contNum = 0;
 
 	// AnsiString APath = "padroes/"+name[i]+".txt";
@@ -201,7 +201,7 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 	PtArquivoDeEventos = fopen(APath.c_str() ,"rt");
 
 	//Número de Amostras do Evento.
-//	fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
+	fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
 
 	//Duração do Evento.
 	fscanf(PtArquivoDeEventos, "%d\n", &Duracao);
@@ -211,10 +211,13 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 
 	//Redimensiona o vetor de amostras do evento.
 	//Amostras.resize(NumeroDeAmostras);
-	Amostras = new double[2048];
+	Amostras = new float[2048];
+	float* Amostras2 = new float[2048];
 
+	// Pula o cabecalho
+    fseek ( PtArquivoDeEventos, 20, SEEK_SET );
 	//Recebe as amostras do evento do arquivo.
-	for (int a = 0; a < 2048; a++)
+	for (int a = 0; a < NumeroDeAmostras; a++)
 	{
 		 fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
   //		fseek ( PtArquivoDeEventos, a , SEEK_SET );
@@ -228,7 +231,7 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 	status = true;
 
     // Plota as amostrar no gráfico
-	addAmostraGraph(NumeroDeAmostras, Amostras);
+	addAmostraGraph(NumeroDeAmostras, Amostras2);
 
   }
   else
@@ -242,22 +245,23 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 }
 //---------------------------------------------------------------------------
 
-void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
+void addAmostraGraph(int NumeroDeAmostras, float* Amostras)
 {
 	if (testar)
 	{
-		normAmostras(NumeroDeAmostras, Amostras);
+		//normAmostras(NumeroDeAmostras, Amostras);
 
 		// Limpar dados do gráfico
 		FmRna->Chart2->Series[0]->Clear();
 
 		for (unsigned int a = 0; a < 512; a++)
 		{
-			FmRna->Chart2->Series[0]->AddY(p[a]);
+			FmRna->Chart2->Series[0]->AddY(Amostras[a]);
+            ShowMessage(Amostras[a]);
 		}
 
-			FmRna->Chart2->Refresh();
-			FmRna->ListBox1Click(FmRna);
+		FmRna->Chart2->Refresh();
+		FmRna->ListBox1Click(FmRna);
 	} else
 	{
 		// Limpar dados do gráfico
@@ -271,10 +275,10 @@ void addAmostraGraph(int NumeroDeAmostras, double* Amostras)
 	}
 }
 
-float normAmostras(int NumeroDeAmostras, double* Amostras)
+float normAmostras(int NumeroDeAmostras, float* Amostras)
 {
 	// Recortar trecho do vetor de 512 amostras
-	double min, max = Amostras[515];
+	float min, max = Amostras[515];
 
 	for ((i = 0); i < 512; i++) {
 
@@ -335,10 +339,10 @@ __fastcall TFmRna::TFmRna(TComponent* Owner)
 void __fastcall TFmRna::FormCreate(TObject *Sender)
 {
 	// Redimensiona o valor máximo do eixo x com o tamanho da tela desejada.
-	Chart2->BottomAxis->Maximum = 550;
+	Chart2->BottomAxis->Maximum = 250;
 
 	// Expande o gráfico para comportar a quantidade de amostras contidas em max_tela.
-	for (unsigned int a = 0; a < 550; a++)
+	for (unsigned int a = 0; a < 250; a++)
 	{
 		Chart2->Series[0]->AddY(0);
 	}
