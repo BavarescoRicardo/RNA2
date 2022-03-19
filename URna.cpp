@@ -348,7 +348,7 @@ void addAmostraGraph(int NumeroDeAmostras, float Amostr[2048])
 float normAmostras(int NumeroDeAmostras, float Amostra[2048])
 {
 	// Recortar trecho do vetor de 512 amostras
-    // O valor é (i + 668) para pegar os valores do meio do sinal - 100 amostras do fseek set para pular o cabecalho
+	// O valor é (i + 668) para pegar os valores do meio do sinal - 100 amostras do fseek set para pular o cabecalho
 	float min, max = amos[400];
 
 	for ((i = 0); i < 512; i++) {
@@ -372,30 +372,32 @@ float normAmostras(int NumeroDeAmostras, float Amostra[2048])
 		// Possíveis formas de normalizar são:
 			// Somar um numero a todas as amostrar para: 		Deslocar
 			// Multiplicar ou dividir todas as amostras para:   Escalonar
-//			if (Amostras != NULL)
-//			{
-//				Amostras[a] = ((Amostras[a] + 15) * 0.02);
-//			}
-  // x       - amostra do sinal a ser normalizado.
-  // in_min  - Limite inferior do sinal de entrada.
-  // in_max  - Limite superior do sinal de entrada.
-  // out_min - Limite inferior do sinal de saída (normalizado).
-  // out_max - Limite superior do sinal de saída (normalizado).
+	//			if (Amostras != NULL)
+	//			{
+	//				Amostras[a] = ((Amostras[a] + 15) * 0.02);
+	//			}
+	// x       - amostra do sinal a ser normalizado.
+	// in_min  - Limite inferior do sinal de entrada.
+	// in_max  - Limite superior do sinal de entrada.
+	// out_min - Limite inferior do sinal de saída (normalizado).
+	// out_max - Limite superior do sinal de saída (normalizado).
 
-		 // p[a] = ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-		 // p[a] = (Amostras[a + 768] / 8);
+	 // p[a] = ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+	 // p[a] = (Amostras[a + 768] / 8);
 
-		 if ((min > 0)) {
-			 p[a] = (p[a] / max);
-		 }else {
-//			 p[a] = ((p[a] - min/2) / (max - min));
-			p[a] = (p[a] / max);
-		 }
+        // Esse calculo é para encontrar o maximo em modulo para a linha n descer abaixo do grafico e nem subir para fora
+		if(( sqrt(max*max) < sqrt(min*min)))
+			max = sqrt(min*min);
+
+		p[a] = (p[a] / max);
+
+	//		 p[a] = ((p[a] - min/2) / (max - min));
+
 
 	}
 
-        // Plota as amostrar - Normalizadas -  no gráfico
-//	addAmostraGraph(NumeroDeAmostras, Amostras);
+		// Plota as amostrar - Normalizadas -  no gráfico
+	//	addAmostraGraph(NumeroDeAmostras, Amostras);
 }
 
 
@@ -411,10 +413,10 @@ __fastcall TFmRna::TFmRna(TComponent* Owner)
 void __fastcall TFmRna::FormCreate(TObject *Sender)
 {
 	// Redimensiona o valor máximo do eixo x com o tamanho da tela desejada.
-	Chart2->BottomAxis->Maximum = 250;
+	Chart2->BottomAxis->Maximum = 510;
 
 	// Expande o gráfico para comportar a quantidade de amostras contidas em max_tela.
-	for (unsigned int a = 0; a < 250; a++)
+	for (unsigned int a = 0; a < 510; a++)
 	{
 		Chart2->Series[0]->AddY(0);
 	}

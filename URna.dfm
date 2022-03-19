@@ -19,7 +19,7 @@ object FmRna: TFmRna
     Top = 8
     Width = 1128
     Height = 509
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     MultiLine = True
     TabOrder = 0
     object TabSheet1: TTabSheet

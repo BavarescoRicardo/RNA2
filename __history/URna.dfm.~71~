@@ -33,6 +33,9 @@ object FmRna: TFmRna
         Title.Font.Color = clNavy
         Title.Text.Strings = (
           'Curva de Treinamento da Rede Neural')
+        BottomAxis.Automatic = False
+        BottomAxis.AutomaticMaximum = False
+        BottomAxis.Maximum = 250.000000000000000000
         BottomAxis.MinimumOffset = 3
         LeftAxis.MinimumOffset = 5
         View3D = False
