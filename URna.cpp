@@ -274,17 +274,17 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 
 	  //Redimensiona o vetor de amostras do evento.
 	  //float amos[2048];
-      NumeroDeAmostras = 1500;
+	  NumeroDeAmostras = 2028;
 	  // amos.resize(NumeroDeAmostras);
 
 	  // Define uma posição no arquivo para pular as informações do cabeçalho
-	  fseek ( PtArquivoDeEventos , 500 , SEEK_SET );
+	  fseek ( PtArquivoDeEventos , 100 , SEEK_SET );
 
-      //Recebe as amostras do evento do arquivo.
-	  for (int a = 0; a < (int) 1500; a++)
-      {
+	  //Recebe as amostras do evento do arquivo.
+	  for (int a = 0; a < (int) NumeroDeAmostras-100; a++)
+	  {
 		fscanf(PtArquivoDeEventos, "%f\n", &amos[a]);
-		//ShowMessage(amos[a]);
+//		ShowMessage(amos[a]);
 	  }
 
 	  //Sinaliza se o arquivo foi aberto corretamente.
@@ -348,24 +348,25 @@ void addAmostraGraph(int NumeroDeAmostras, float Amostr[2048])
 float normAmostras(int NumeroDeAmostras, float Amostra[2048])
 {
 	// Recortar trecho do vetor de 512 amostras
-	float min, max = amos[515];
+    // O valor é (i + 668) para pegar os valores do meio do sinal - 100 amostras do fseek set para pular o cabecalho
+	float min, max = amos[400];
 
 	for ((i = 0); i < 512; i++) {
 
-		if(amos[i] < min){
-			min = (amos[i + 515]);
+		if(amos[i + 668] < min){
+			min = (amos[i + 668]);
 		}
 
-		if(amos[i] > max){
-			max = (amos[i + 515]);
+		if(amos[i + 668] > max){
+			max = (amos[i + 668]);
 		}
 
-		p[i] = (amos[i + 515]);
+		p[i] = (amos[i + 668]);
 	}
 
 
 	// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
-	for (int a = 0; a < 511; a++)
+	for (int a = 0; a < 512; a++)
 	{
 		// Normalizar valores amostras para ficar entre -1 e 1
 		// Possíveis formas de normalizar são:
