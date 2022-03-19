@@ -13,13 +13,11 @@
 TFmRna *FmRna;
 Thread *MyThread;
 float* Amostras;
+float amos[2048];
 void lerArquivos(AnsiString ArquivoDeEventos);
 void carregarArquivo(int x);
-void addAmostraGraph(int NumeroDeAmostras, float* Amostras);
-float normAmostras(int NumeroDeAmostras, float* Amostras);
-
-
-
+void addAmostraGraph(int NumeroDeAmostras, float Amostras[2048]);
+float normAmostras(int NumeroDeAmostras, float Amostras[2048]);
 
 
 
@@ -275,8 +273,9 @@ void lerArquivos(AnsiString ArquivoDeEventos)
       fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
 
 	  //Redimensiona o vetor de amostras do evento.
-	  float amos[2048];
-//	  Amostras.resize(NumeroDeAmostras);
+	  //float amos[2048];
+      NumeroDeAmostras = 1500;
+	  // amos.resize(NumeroDeAmostras);
 
 	  // Define uma posição no arquivo para pular as informações do cabeçalho
 	  fseek ( PtArquivoDeEventos , 500 , SEEK_SET );
@@ -288,13 +287,17 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 		//ShowMessage(amos[a]);
 	  }
 
-      //Fecha o Ponteiro do Arquivo de Padrões.
-      fclose(PtArquivoDeEventos);
+	  //Sinaliza se o arquivo foi aberto corretamente.
+	  status = true;
+		if (testar) {
+		  addAmostraGraph(NumeroDeAmostras, amos);
+		}
 
-      //Sinaliza se o arquivo foi aberto corretamente.
-      status = true;
+	  //Fecha o Ponteiro do Arquivo de Padrões.
+	  fclose(PtArquivoDeEventos);
+
     }
-    else
+	else
     {
       status = false;
 	  recebe_string = ExtractFileName(ArquivoDeEventos);
@@ -313,19 +316,18 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 
 //---------------------------------------------------------------------------
 
-void addAmostraGraph(int NumeroDeAmostras, float* Amostras)
+void addAmostraGraph(int NumeroDeAmostras, float Amostr[2048])
 {
 	if (testar)
 	{
-		//normAmostras(NumeroDeAmostras, Amostras);
+		normAmostras(NumeroDeAmostras, amos);
 
 		// Limpar dados do gráfico
 		FmRna->Chart2->Series[0]->Clear();
 
 		for (unsigned int a = 0; a < 512; a++)
 		{
-			FmRna->Chart2->Series[0]->AddY(Amostras[a]);
-            ShowMessage(Amostras[a]);
+			FmRna->Chart2->Series[0]->AddY(p[a]);
 		}
 
 		FmRna->Chart2->Refresh();
@@ -338,27 +340,27 @@ void addAmostraGraph(int NumeroDeAmostras, float* Amostras)
 		for (int a = 768; a < 1280; a++)
 		{
 			// Adicionar ao terceiro grafico
-			FmRna->amostrasGraf->Series[0]->AddY(Amostras[a]);
+			FmRna->amostrasGraf->Series[0]->AddY(Amostr[a]);
 		}
 	}
 }
 
-float normAmostras(int NumeroDeAmostras, float* Amostras)
+float normAmostras(int NumeroDeAmostras, float Amostra[2048])
 {
 	// Recortar trecho do vetor de 512 amostras
-	float min, max = Amostras[515];
+	float min, max = amos[515];
 
 	for ((i = 0); i < 512; i++) {
 
-		if(Amostras[i] < min){
-			min = (Amostras[i + 515]);
+		if(amos[i] < min){
+			min = (amos[i + 515]);
 		}
 
-		if(Amostras[i] > max){
-			max = (Amostras[i + 515]);
+		if(amos[i] > max){
+			max = (amos[i + 515]);
 		}
 
-		p[i] = (Amostras[i + 515]);
+		p[i] = (amos[i + 515]);
 	}
 
 
@@ -381,12 +383,13 @@ float normAmostras(int NumeroDeAmostras, float* Amostras)
 
 		 // p[a] = ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 		 // p[a] = (Amostras[a + 768] / 8);
+
 		 if ((min > 0)) {
 			 p[a] = (p[a] / max);
 		 }else {
 //			 p[a] = ((p[a] - min/2) / (max - min));
 			p[a] = (p[a] / max);
-         }
+		 }
 
 	}
 
