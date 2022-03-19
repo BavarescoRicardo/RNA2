@@ -12,10 +12,13 @@
 
 TFmRna *FmRna;
 Thread *MyThread;
+float* Amostras;
 void lerArquivos(AnsiString ArquivoDeEventos);
 void carregarArquivo(int x);
 void addAmostraGraph(int NumeroDeAmostras, float* Amostras);
 float normAmostras(int NumeroDeAmostras, float* Amostras);
+
+
 
 
 
@@ -104,7 +107,6 @@ AnsiString NomeDoArquivo;
 int NumeroDeAmostras;
 char Tipo;
 int Duracao;
-float* Amostras;
 Boolean testar = false;
 
 float entrada_camada1[c1] = {0}, saida_camada1[c1] = {0}, erro_camada1[c1] = {0};
@@ -176,13 +178,80 @@ float dv[3][c2] =
 
 //---------------------------------------------------------------------------
 
+//
+////Método de abertura dos arquivos de eventos.
+//void lerArquivos(AnsiString ArquivoDeEventos)
+//{
+//  //Declaração do Ponteiro do Arquivo de Eventos.
+//  FILE *PtArquivoDeEventos;
+//  const char *recebe_string;
+//
+//  //Declaração da variável de status de abertura do arquivo.
+//  bool status = false;
+//
+//  //Verifica se o arquivo existe antes de abrir.
+//  if (FileExists(ArquivoDeEventos))
+//  {
+//	// ShowMessage("Encontrou e conseguiu abrir o arquivo dentro do metodo");
+//	//Abertura do Arquivo de Padrões.
+//	FILE *arq_treinamento;
+//
+//	int contNum = 0;
+//
+//	// AnsiString APath = "padroes/"+name[i]+".txt";
+//	AnsiString APath = ArquivoDeEventos;
+//	PtArquivoDeEventos = fopen(APath.c_str() ,"rt");
+//
+//	//Número de Amostras do Evento.
+//	fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
+//
+//	//Duração do Evento.
+//	fscanf(PtArquivoDeEventos, "%d\n", &Duracao);
+//
+//	//Tipo do Evento.
+//	fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
+//
+//	//Redimensiona o vetor de amostras do evento.
+//	//Amostras.resize(NumeroDeAmostras);
+//	Amostras = new float[2048];
+//	float* Amostras2 = new float[2048];
+//
+//	// Pula o cabecalho
+//    fseek ( PtArquivoDeEventos, 20, SEEK_SET );
+//	//Recebe as amostras do evento do arquivo.
+//	for (int a = 0; a < NumeroDeAmostras; a++)
+//	{
+//		 fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
+//  //		fseek ( PtArquivoDeEventos, a , SEEK_SET );
+////		fget(Amostras[a], 10, PtArquivoDeEventos);
+//	}
+//
+//	//Fecha o Ponteiro do Arquivo de Padrões.
+//	fclose(PtArquivoDeEventos);
+//
+//	//Sinaliza se o arquivo foi aberto corretamente.
+//	status = true;
+//
+//    // Plota as amostrar no gráfico
+//	addAmostraGraph(NumeroDeAmostras, Amostras2);
+//
+//  }
+//  else
+//  {
+//	status = false;
+//	// recebe_string = ExtractFileName(ArquivoDeEventos).c_str();
+//  	ShowMessage("Erro ao abrir o arquivo de Eventos");
+//  }
+//
+//  //return (status);
+//}
+//---------------------------------------------------------------------------
 
-//Método de abertura dos arquivos de eventos.
 void lerArquivos(AnsiString ArquivoDeEventos)
 {
   //Declaração do Ponteiro do Arquivo de Eventos.
   FILE *PtArquivoDeEventos;
-  const char *recebe_string;
+  AnsiString recebe_string;
 
   //Declaração da variável de status de abertura do arquivo.
   bool status = false;
@@ -190,59 +259,58 @@ void lerArquivos(AnsiString ArquivoDeEventos)
   //Verifica se o arquivo existe antes de abrir.
   if (FileExists(ArquivoDeEventos))
   {
-	// ShowMessage("Encontrou e conseguiu abrir o arquivo dentro do metodo");
 	//Abertura do Arquivo de Padrões.
-	FILE *arq_treinamento;
-
-	int contNum = 0;
-
-	// AnsiString APath = "padroes/"+name[i]+".txt";
-	AnsiString APath = ArquivoDeEventos;
-	PtArquivoDeEventos = fopen(APath.c_str() ,"rt");
-
-	//Número de Amostras do Evento.
-	fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
-
-	//Duração do Evento.
-	fscanf(PtArquivoDeEventos, "%d\n", &Duracao);
-
-	//Tipo do Evento.
-	fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
-
-	//Redimensiona o vetor de amostras do evento.
-	//Amostras.resize(NumeroDeAmostras);
-	Amostras = new float[2048];
-	float* Amostras2 = new float[2048];
-
-	// Pula o cabecalho
-    fseek ( PtArquivoDeEventos, 20, SEEK_SET );
-	//Recebe as amostras do evento do arquivo.
-	for (int a = 0; a < NumeroDeAmostras; a++)
+	if ((PtArquivoDeEventos = fopen(ArquivoDeEventos.c_str(),"r")) != NULL)
 	{
-		 fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
-  //		fseek ( PtArquivoDeEventos, a , SEEK_SET );
-//		fget(Amostras[a], 10, PtArquivoDeEventos);
+	  //Extrai apenas o Nome do Arquivo de Evento.
+	  NomeDoArquivo = ExtractFileName(ArquivoDeEventos);
+
+      //Número de Amostras do Evento.
+      fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
+
+      //Duração do Evento.
+      fscanf(PtArquivoDeEventos, "%d\n", &Duracao);
+
+      //Tipo do Evento.
+      fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
+
+	  //Redimensiona o vetor de amostras do evento.
+	  float amos[2048];
+//	  Amostras.resize(NumeroDeAmostras);
+
+	  // Define uma posição no arquivo para pular as informações do cabeçalho
+	  fseek ( PtArquivoDeEventos , 500 , SEEK_SET );
+
+      //Recebe as amostras do evento do arquivo.
+	  for (int a = 0; a < (int) 1500; a++)
+      {
+		fscanf(PtArquivoDeEventos, "%f\n", &amos[a]);
+		//ShowMessage(amos[a]);
+	  }
+
+      //Fecha o Ponteiro do Arquivo de Padrões.
+      fclose(PtArquivoDeEventos);
+
+      //Sinaliza se o arquivo foi aberto corretamente.
+      status = true;
+    }
+    else
+    {
+      status = false;
+	  recebe_string = ExtractFileName(ArquivoDeEventos);
+	  ShowMessage(recebe_string + "Erro ao abrir o arquivo de Eventos");
 	}
-
-	//Fecha o Ponteiro do Arquivo de Padrões.
-	fclose(PtArquivoDeEventos);
-
-	//Sinaliza se o arquivo foi aberto corretamente.
-	status = true;
-
-    // Plota as amostrar no gráfico
-	addAmostraGraph(NumeroDeAmostras, Amostras2);
-
   }
   else
   {
 	status = false;
-	// recebe_string = ExtractFileName(ArquivoDeEventos).c_str();
-  	ShowMessage("Erro ao abrir o arquivo de Eventos");
+	recebe_string = ExtractFileName(ArquivoDeEventos).c_str();
+	ShowMessage(recebe_string + "Erro ao abrir o arquivo de Eventos");
   }
 
-  //return (status);
 }
+
+
 //---------------------------------------------------------------------------
 
 void addAmostraGraph(int NumeroDeAmostras, float* Amostras)
