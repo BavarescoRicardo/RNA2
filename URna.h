@@ -51,9 +51,9 @@ class TFmRna : public TForm
 	TLabel *Label4;
 	TLabel *Label5;
 	TButton *btnAbrirArquivo;
-		void __fastcall Button1Click(TObject *Sender);
-		void __fastcall Button2Click(TObject *Sender);
-        void __fastcall AtualizaGrafico();
+	void __fastcall Button1Click(TObject *Sender);
+	void __fastcall Button2Click(TObject *Sender);
+	void __fastcall AtualizaGrafico();
 	void __fastcall FormCreate(TObject *Sender);
 	void __fastcall ListBox1Click(TObject *Sender);
 	void __fastcall ListBox2Click(TObject *Sender);

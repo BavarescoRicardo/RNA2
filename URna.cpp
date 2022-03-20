@@ -92,7 +92,7 @@ float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 
 
    // cx deve ser 512
-const int cx = 20;         // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
+const int cx = 2;         // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
 const int c1 = 1;          // Camada Intermediária.
 const int c2 = 2;           // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
 
@@ -128,30 +128,7 @@ float d[4][c2] =
 };
 
 float v[3][cx] =
-{
-/*
-//1.2
-0.000000, 0.075327, 0.150226,
-//1.6
-0.000000, 0.100362, 0.199710,
-//2.2
-0.000000, 0.137790, 0.272952,
-//2.4
-0.000000, 0.150226, 0.297042,
-//2.8
-0.000000, 0.175023, 0.344643,
-//3.1
-0.000000, 0.193549, 0.379779,
-//3.5
-0.000000, 0.218143, 0.425779,
-*/
-//3.7
-0.000000, 0.230389, 0.448383,
-//4.2
-0.000000, 0.260842, 0.503623,
-//4.4
-0.000000, 0.272952, 0.525175
-};
+{0};
 //
 //
 // Valores desejados dos padrões ao final do treinamento.
@@ -260,41 +237,41 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 	//Abertura do Arquivo de Padrões.
 	if ((PtArquivoDeEventos = fopen(ArquivoDeEventos.c_str(),"r")) != NULL)
 	{
-	  //Extrai apenas o Nome do Arquivo de Evento.
-	  NomeDoArquivo = ExtractFileName(ArquivoDeEventos);
+		//Extrai apenas o Nome do Arquivo de Evento.
+		NomeDoArquivo = ExtractFileName(ArquivoDeEventos);
 
-      //Número de Amostras do Evento.
-      fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
+		//Número de Amostras do Evento.
+		fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
 
-      //Duração do Evento.
-      fscanf(PtArquivoDeEventos, "%d\n", &Duracao);
+		//Duração do Evento.
+		fscanf(PtArquivoDeEventos, "%d\n", &Duracao);
 
-      //Tipo do Evento.
-      fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
+		//Tipo do Evento.
+		fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
 
-	  //Redimensiona o vetor de amostras do evento.
-//	  ShowMessage(NumeroDeAmostras);
-	  // amos.resize(NumeroDeAmostras);
-	  amos = new float[2048];
+		//Redimensiona o vetor de amostras do evento.
+		//	  ShowMessage(NumeroDeAmostras);
+		// amos.resize(NumeroDeAmostras);
+		//amos = new float[2048];
 
-	  // Define uma posição no arquivo para pular as informações do cabeçalho
-	  fseek ( PtArquivoDeEventos , 100 , SEEK_SET );
+		// Define uma posição no arquivo para pular as informações do cabeçalho
+		fseek ( PtArquivoDeEventos , 100 , SEEK_SET );
 
-	  //Recebe as amostras do evento do arquivo.
-	  for (int a = 0; a < (int) NumeroDeAmostras-100; a++)
-	  {
-		fscanf(PtArquivoDeEventos, "%f\n", &amos[a]);
-//		ShowMessage(amos[a]);
-	  }
+		//Recebe as amostras do evento do arquivo.
+		for (int a = 0; a < (int) NumeroDeAmostras-100; a++)
+		{
+			fscanf(PtArquivoDeEventos, "%f\n", &amos[a]);
+		}
 
-	  //Sinaliza se o arquivo foi aberto corretamente.
-	  status = true;
+
+		//Sinaliza se o arquivo foi aberto corretamente.
+		status = true;
 		if (1) {
 		  addAmostraGraph(NumeroDeAmostras, amos);
 		}
 
-	  //Fecha o Ponteiro do Arquivo de Padrões.
-	  fclose(PtArquivoDeEventos);
+		//Fecha o Ponteiro do Arquivo de Padrões.
+		fclose(PtArquivoDeEventos);
 
     }
 	else
@@ -312,7 +289,6 @@ void lerArquivos(AnsiString ArquivoDeEventos)
   }
 
 }
-
 
 //---------------------------------------------------------------------------
 
@@ -334,13 +310,14 @@ void addAmostraGraph(int NumeroDeAmostras, float Amostr[2048])
 		FmRna->ListBox1Click(FmRna);
 	} else
 	{
+		normAmostras(NumeroDeAmostras, amos);
 		// Limpar dados do gráfico
 		FmRna->amostrasGraf->Series[0]->Clear();
 
 		for (int a = 768; a < 1280; a++)
 		{
 			// Adicionar ao terceiro grafico
-			FmRna->amostrasGraf->Series[0]->AddY(Amostr[a]);
+			FmRna->amostrasGraf->Series[0]->AddY(p[a]);
 		}
 	}
 }
@@ -390,13 +367,9 @@ float normAmostras(int NumeroDeAmostras, float Amostra[2048])
 			max = sqrt(min*min);
 
 		p[a] = (p[a] / max);
-
 	//		 p[a] = ((p[a] - min/2) / (max - min));
-
-
 	}
-
-		// Plota as amostrar - Normalizadas -  no gráfico
+	// Plota as amostrar - Normalizadas -  no gráfico
 	//	addAmostraGraph(NumeroDeAmostras, Amostras);
 }
 
@@ -430,6 +403,8 @@ void __fastcall TFmRna::FormCreate(TObject *Sender)
 
 void __fastcall TFmRna::Button1Click(TObject *Sender)
 {
+	testar = false;
+
 	// Limpa as séries do chart para nova plotagem.
 	Chart1->Series[0]->Clear();
 	Chart1->Series[1]->Clear();
@@ -815,8 +790,9 @@ void __fastcall Thread::Execute()
 
 		erro_medio_quadratico_validacao = (1.0 / padroes_validacao) * erro_medio_quadratico_validacao;
 
+//        rba _Erro aoo sincronizar
 		// Plotagem dos dados sincronizados com a thread.
-		Synchronize(FmRna->AtualizaGrafico);
+	   	//Synchronize(FmRna->AtualizaGrafico);
 
 		erro_medio_quadratico = 0;
 		erro_medio_quadratico_validacao = 0;

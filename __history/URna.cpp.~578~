@@ -273,23 +273,25 @@ void lerArquivos(AnsiString ArquivoDeEventos)
       fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
 
 	  //Redimensiona o vetor de amostras do evento.
-	  //float amos[2048];
-      NumeroDeAmostras = 1500;
+//	  ShowMessage(NumeroDeAmostras);
 	  // amos.resize(NumeroDeAmostras);
+	  //amos = new float[2048];
 
 	  // Define uma posição no arquivo para pular as informações do cabeçalho
-	  fseek ( PtArquivoDeEventos , 500 , SEEK_SET );
+	  fseek ( PtArquivoDeEventos , 100 , SEEK_SET );
 
-      //Recebe as amostras do evento do arquivo.
-	  for (int a = 0; a < (int) 1500; a++)
-      {
+	  //Recebe as amostras do evento do arquivo.
+	  for (int a = 0; a < (int) NumeroDeAmostras-100; a++)
+	  {
 		fscanf(PtArquivoDeEventos, "%f\n", &amos[a]);
-		//ShowMessage(amos[a]);
+
+		if (!testar)
+			ShowMessage(amos[a]);
 	  }
 
 	  //Sinaliza se o arquivo foi aberto corretamente.
 	  status = true;
-		if (testar) {
+		if (1) {
 		  addAmostraGraph(NumeroDeAmostras, amos);
 		}
 
@@ -325,9 +327,9 @@ void addAmostraGraph(int NumeroDeAmostras, float Amostr[2048])
 		// Limpar dados do gráfico
 		FmRna->Chart2->Series[0]->Clear();
 
-		for (unsigned int a = 0; a < 512; a++)
+		for (unsigned int a = 0; a < 600; a++)
 		{
-			FmRna->Chart2->Series[0]->AddY(Amostr[a]);
+			FmRna->Chart2->Series[0]->AddY(p[a]);
 		}
 
 		FmRna->Chart2->Refresh();
@@ -348,53 +350,56 @@ void addAmostraGraph(int NumeroDeAmostras, float Amostr[2048])
 float normAmostras(int NumeroDeAmostras, float Amostra[2048])
 {
 	// Recortar trecho do vetor de 512 amostras
-	float min, max = amos[515];
+	// O valor é (i + 668) para pegar os valores do meio do sinal - 100 amostras do fseek set para pular o cabecalho  + margem de 50 antes e 50 depois
+	float min, max = amos[400];
 
-	for ((i = 0); i < 512; i++) {
+	for ((i = 0); i < 612; i++) {
 
-		if(amos[i] < min){
-			min = (amos[i + 515]);
+		if(amos[i + 618] < min){
+			min = (amos[i + 618]);
 		}
 
-		if(amos[i] > max){
-			max = (amos[i + 515]);
+		if(amos[i + 618] > max){
+			max = (amos[i + 618]);
 		}
 
-		p[i] = (amos[i + 515]);
+		p[i] = (amos[i + 618]);
 	}
 
 
 	// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
-	for (int a = 0; a < 511; a++)
+	for (int a = 0; a < 612; a++)
 	{
 		// Normalizar valores amostras para ficar entre -1 e 1
 		// Possíveis formas de normalizar são:
 			// Somar um numero a todas as amostrar para: 		Deslocar
 			// Multiplicar ou dividir todas as amostras para:   Escalonar
-//			if (Amostras != NULL)
-//			{
-//				Amostras[a] = ((Amostras[a] + 15) * 0.02);
-//			}
-  // x       - amostra do sinal a ser normalizado.
-  // in_min  - Limite inferior do sinal de entrada.
-  // in_max  - Limite superior do sinal de entrada.
-  // out_min - Limite inferior do sinal de saída (normalizado).
-  // out_max - Limite superior do sinal de saída (normalizado).
+	//			if (Amostras != NULL)
+	//			{
+	//				Amostras[a] = ((Amostras[a] + 15) * 0.02);
+	//			}
+	// x       - amostra do sinal a ser normalizado.
+	// in_min  - Limite inferior do sinal de entrada.
+	// in_max  - Limite superior do sinal de entrada.
+	// out_min - Limite inferior do sinal de saída (normalizado).
+	// out_max - Limite superior do sinal de saída (normalizado).
 
-		 // p[a] = ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-		 // p[a] = (Amostras[a + 768] / 8);
-		 ShowMessage(p[a]);
-		 if ((min > 0)) {
-			 p[a] = (p[a] / max);
-		 }else {
-//			 p[a] = ((p[a] - min/2) / (max - min));
-			p[a] = (p[a] / max);
-         }
+	 // p[a] = ((x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+	 // p[a] = (Amostras[a + 768] / 8);
+
+        // Esse calculo é para encontrar o maximo em modulo para a linha n descer abaixo do grafico e nem subir para fora
+		if(( sqrt(max*max) < sqrt(min*min)))
+			max = sqrt(min*min);
+
+		p[a] = (p[a] / max);
+
+	//		 p[a] = ((p[a] - min/2) / (max - min));
+
 
 	}
 
-        // Plota as amostrar - Normalizadas -  no gráfico
-//	addAmostraGraph(NumeroDeAmostras, Amostras);
+		// Plota as amostrar - Normalizadas -  no gráfico
+	//	addAmostraGraph(NumeroDeAmostras, Amostras);
 }
 
 
@@ -410,10 +415,10 @@ __fastcall TFmRna::TFmRna(TComponent* Owner)
 void __fastcall TFmRna::FormCreate(TObject *Sender)
 {
 	// Redimensiona o valor máximo do eixo x com o tamanho da tela desejada.
-	Chart2->BottomAxis->Maximum = 250;
+	Chart2->BottomAxis->Maximum = 600;
 
 	// Expande o gráfico para comportar a quantidade de amostras contidas em max_tela.
-	for (unsigned int a = 0; a < 250; a++)
+	for (unsigned int a = 0; a < 600; a++)
 	{
 		Chart2->Series[0]->AddY(0);
 	}
@@ -427,6 +432,8 @@ void __fastcall TFmRna::FormCreate(TObject *Sender)
 
 void __fastcall TFmRna::Button1Click(TObject *Sender)
 {
+	testar = false;
+
 	// Limpa as séries do chart para nova plotagem.
 	Chart1->Series[0]->Clear();
 	Chart1->Series[1]->Clear();
