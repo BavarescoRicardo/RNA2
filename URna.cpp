@@ -273,9 +273,9 @@ void lerArquivos(AnsiString ArquivoDeEventos)
       fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
 
 	  //Redimensiona o vetor de amostras do evento.
-	  //float amos[2048];
-	  NumeroDeAmostras = 2028;
+//	  ShowMessage(NumeroDeAmostras);
 	  // amos.resize(NumeroDeAmostras);
+	  amos = new float[2048];
 
 	  // Define uma posição no arquivo para pular as informações do cabeçalho
 	  fseek ( PtArquivoDeEventos , 100 , SEEK_SET );
@@ -289,7 +289,7 @@ void lerArquivos(AnsiString ArquivoDeEventos)
 
 	  //Sinaliza se o arquivo foi aberto corretamente.
 	  status = true;
-		if (testar) {
+		if (1) {
 		  addAmostraGraph(NumeroDeAmostras, amos);
 		}
 
@@ -325,7 +325,7 @@ void addAmostraGraph(int NumeroDeAmostras, float Amostr[2048])
 		// Limpar dados do gráfico
 		FmRna->Chart2->Series[0]->Clear();
 
-		for (unsigned int a = 0; a < 512; a++)
+		for (unsigned int a = 0; a < 600; a++)
 		{
 			FmRna->Chart2->Series[0]->AddY(p[a]);
 		}
@@ -348,25 +348,25 @@ void addAmostraGraph(int NumeroDeAmostras, float Amostr[2048])
 float normAmostras(int NumeroDeAmostras, float Amostra[2048])
 {
 	// Recortar trecho do vetor de 512 amostras
-	// O valor é (i + 668) para pegar os valores do meio do sinal - 100 amostras do fseek set para pular o cabecalho
+	// O valor é (i + 668) para pegar os valores do meio do sinal - 100 amostras do fseek set para pular o cabecalho  + margem de 50 antes e 50 depois
 	float min, max = amos[400];
 
-	for ((i = 0); i < 512; i++) {
+	for ((i = 0); i < 612; i++) {
 
-		if(amos[i + 668] < min){
-			min = (amos[i + 668]);
+		if(amos[i + 618] < min){
+			min = (amos[i + 618]);
 		}
 
-		if(amos[i + 668] > max){
-			max = (amos[i + 668]);
+		if(amos[i + 618] > max){
+			max = (amos[i + 618]);
 		}
 
-		p[i] = (amos[i + 668]);
+		p[i] = (amos[i + 618]);
 	}
 
 
 	// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
-	for (int a = 0; a < 512; a++)
+	for (int a = 0; a < 612; a++)
 	{
 		// Normalizar valores amostras para ficar entre -1 e 1
 		// Possíveis formas de normalizar são:
@@ -413,10 +413,10 @@ __fastcall TFmRna::TFmRna(TComponent* Owner)
 void __fastcall TFmRna::FormCreate(TObject *Sender)
 {
 	// Redimensiona o valor máximo do eixo x com o tamanho da tela desejada.
-	Chart2->BottomAxis->Maximum = 510;
+	Chart2->BottomAxis->Maximum = 600;
 
 	// Expande o gráfico para comportar a quantidade de amostras contidas em max_tela.
-	for (unsigned int a = 0; a < 510; a++)
+	for (unsigned int a = 0; a < 600; a++)
 	{
 		Chart2->Series[0]->AddY(0);
 	}
