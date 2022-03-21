@@ -93,7 +93,7 @@ float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 
 
 // cx deve ser 512
-const int cx = 2;          // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
+const int cx = 512;          // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
 const int c1 = 1;          // Camada Intermediária.
 const int c2 = 2;          // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
 
@@ -135,92 +135,10 @@ float v[3][cx] =
 // Valores desejados dos padrões ao final do treinamento.
 float dv[3][c2] =
 {
-/*
-1.0,	0.0,    0.0,	0.0,	0.0,    0.0,	0.0,    0.0,	0.0,	0.0,
-0.0,	1.0,	0.0,	0.0,	0.0,    0.0,	0.0,    0.0,	0.0,	0.0,
-0.0,	0.0,	1.0,	0.0,	0.0,    0.0,	0.0,    0.0,	0.0,	0.0,
-0.0,	0.0,	0.0,	1.0,	0.0,    0.0,	0.0,    0.0,	0.0,	0.0,
-0.0,	0.0,	0.0,	0.0,	1.0,    0.0,	0.0,    0.0,	0.0,	0.0,
-0.0,	0.0,	0.0,	0.0,	0.0,    1.0,	0.0,    0.0,	0.0,	0.0,
-0.0,	0.0,	0.0,	0.0,	0.0,    0.0,	1.0,    0.0,	0.0,	0.0,
-0.0,	0.0,	0.0,	0.0,	0.0,    0.0,	0.0,    1.0,	0.0,	0.0,
-0.0,	0.0,	0.0,	0.0,	0.0,    0.0,	0.0,    0.0,	1.0,	0.0,
-0.0,	0.0,	0.0,	0.0,	0.0,    0.0,	0.0,    0.0,	0.0,	1.0
-*/
-
-0.0,	0.0,    0.0
+	0.0,	0.0,    0.0
 };
 
 
-//---------------------------------------------------------------------------
-
-//
-////Método de abertura dos arquivos de eventos.
-//void lerArquivos(AnsiString ArquivoDeEventos)
-//{
-//  //Declaração do Ponteiro do Arquivo de Eventos.
-//  FILE *PtArquivoDeEventos;
-//  const char *recebe_string;
-//
-//  //Declaração da variável de status de abertura do arquivo.
-//  bool status = false;
-//
-//  //Verifica se o arquivo existe antes de abrir.
-//  if (FileExists(ArquivoDeEventos))
-//  {
-//	// ShowMessage("Encontrou e conseguiu abrir o arquivo dentro do metodo");
-//	//Abertura do Arquivo de Padrões.
-//	FILE *arq_treinamento;
-//
-//	int contNum = 0;
-//
-//	// AnsiString APath = "padroes/"+name[i]+".txt";
-//	AnsiString APath = ArquivoDeEventos;
-//	PtArquivoDeEventos = fopen(APath.c_str() ,"rt");
-//
-//	//Número de Amostras do Evento.
-//	fscanf(PtArquivoDeEventos, "%d\n", &NumeroDeAmostras);
-//
-//	//Duração do Evento.
-//	fscanf(PtArquivoDeEventos, "%d\n", &Duracao);
-//
-//	//Tipo do Evento.
-//	fscanf(PtArquivoDeEventos, "%c\n\n", &Tipo);
-//
-//	//Redimensiona o vetor de amostras do evento.
-//	//Amostras.resize(NumeroDeAmostras);
-//	Amostras = new float[2048];
-//	float* Amostras2 = new float[2048];
-//
-//	// Pula o cabecalho
-//    fseek ( PtArquivoDeEventos, 20, SEEK_SET );
-//	//Recebe as amostras do evento do arquivo.
-//	for (int a = 0; a < NumeroDeAmostras; a++)
-//	{
-//		 fscanf(PtArquivoDeEventos, "%lf\n", &Amostras[a]);
-//  //		fseek ( PtArquivoDeEventos, a , SEEK_SET );
-////		fget(Amostras[a], 10, PtArquivoDeEventos);
-//	}
-//
-//	//Fecha o Ponteiro do Arquivo de Padrões.
-//	fclose(PtArquivoDeEventos);
-//
-//	//Sinaliza se o arquivo foi aberto corretamente.
-//	status = true;
-//
-//    // Plota as amostrar no gráfico
-//	addAmostraGraph(NumeroDeAmostras, Amostras2);
-//
-//  }
-//  else
-//  {
-//	status = false;
-//	// recebe_string = ExtractFileName(ArquivoDeEventos).c_str();
-//  	ShowMessage("Erro ao abrir o arquivo de Eventos");
-//  }
-//
-//  //return (status);
-//}
 //---------------------------------------------------------------------------
 
 void lerArquivos(AnsiString ArquivoDeEventos)
@@ -309,18 +227,20 @@ void addAmostraGraph(int NumeroDeAmostras, float Amostr[2048])
 
 		FmRna->Chart2->Refresh();
 		FmRna->ListBox1Click(FmRna);
-	} else
-	{
-		normAmostras(NumeroDeAmostras, amos);
-		// Limpar dados do gráfico
-		FmRna->amostrasGraf->Series[0]->Clear();
-
-		for (int a = 768; a < 1280; a++)
-		{
-			// Adicionar ao terceiro grafico
-			FmRna->amostrasGraf->Series[0]->AddY(p[a]);
-		}
 	}
+//	else
+//	{
+//		normAmostras(NumeroDeAmostras, amos);
+//		// Limpar dados do gráfico
+//		FmRna->Chart1->Series[0]->Clear();
+//		FmRna->Chart1->Series[1]->Clear();
+//
+//		for (int a = 0; a < 500; a++)
+//		{
+//			// Adicionar ao terceiro grafico
+//			FmRna->Chart1->Series[0]->AddY(p[a]);
+//		}
+//	}
 }
 
 float normAmostras(int NumeroDeAmostras, float Amostra[2048])
@@ -458,7 +378,7 @@ void __fastcall Thread::Execute()
 	precisao_da_randomizacao = 0.01; // Precisão da randomização (0.1, 0.01, 0.001)
 	ERRO = 0.0001;              	// Erro mínimo aceitável da rede (se aplicável).
 	MOMENTUM = 0.9;             	// Termo de momentum.
-	epocas = 250;            		// Número máximo de épocas de treinamento.
+	epocas = 5;            		// Número máximo de épocas de treinamento.
 	rnd = 0;                    	// Variável auxiliar para a randomização dos pesos.
 	soma = 0;                   	// Variável auxiliar para a soma das sinapses.
 	erro_medio_quadratico = 0;  	// Variável auxiliar do Erro médio quadrático.
@@ -608,7 +528,7 @@ void __fastcall Thread::Execute()
 					// Chama a função para ler os arquivos      ---     pode ser a função que o giovani passou
 						// Grava temporario no vetor p[] com 2048 valor * apenas 1 linha
 						  // a cada epoca chama a função denovo e só sobrescreve o vetor temporario ai ocupa menos memória
-					carregarArquivo(i);
+					carregarArquivo(cx);
 					soma += w1[n] * p[i];
 					n += 1;
 				}
@@ -718,7 +638,7 @@ void __fastcall Thread::Execute()
 
 
 		// Plotagem dos dados sincronizados com a thread.
-		//Synchronize(FmRna->AtualizaGrafico);
+		Synchronize(FmRna->AtualizaGrafico);
 		//erro_medio_quadratico = 0;
 
 
