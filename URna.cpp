@@ -4,6 +4,7 @@
 #pragma hdrstop
 
 #include "URna.h"
+#include <string>
 
 //---------------------------------------------------------------------------
 
@@ -93,8 +94,8 @@ float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 
 
 // cx deve ser 512
-const int cx = 512;          // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
-const int c1 = 1;          // Camada Intermediária.
+const int cx = 82;          // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
+const int c1 = 10;          // Camada Intermediária.
 const int c2 = 2;          // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
 
 float w1[cx*c1]  = {0};     // cx*c1
@@ -228,19 +229,6 @@ void addAmostraGraph(int NumeroDeAmostras, float Amostr[2048])
 		FmRna->Chart2->Refresh();
 		FmRna->ListBox1Click(FmRna);
 	}
-//	else
-//	{
-//		normAmostras(NumeroDeAmostras, amos);
-//		// Limpar dados do gráfico
-//		FmRna->Chart1->Series[0]->Clear();
-//		FmRna->Chart1->Series[1]->Clear();
-//
-//		for (int a = 0; a < 500; a++)
-//		{
-//			// Adicionar ao terceiro grafico
-//			FmRna->Chart1->Series[0]->AddY(p[a]);
-//		}
-//	}
 }
 
 float normAmostras(int NumeroDeAmostras, float Amostra[2048])
@@ -528,7 +516,7 @@ void __fastcall Thread::Execute()
 					// Chama a função para ler os arquivos      ---     pode ser a função que o giovani passou
 						// Grava temporario no vetor p[] com 2048 valor * apenas 1 linha
 						  // a cada epoca chama a função denovo e só sobrescreve o vetor temporario ai ocupa menos memória
-					carregarArquivo(cx);
+					carregarArquivo(i);
 					soma += w1[n] * p[i];
 					n += 1;
 				}
@@ -939,12 +927,14 @@ void __fastcall TFmRna::btnAbrirArquivoClick(TObject *Sender)
 void carregarArquivo(int x)
 {
 	// lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName("EspículaOnda_PacH3_T10-Pz_003407_2048_96ms.pdr"));
-
 	AnsiString seqarquivo[10]  = {"1", "2", "3", "4","5", "6", "7", "8", "9", "10"};
-	if (x > 9) {
-	        x = 0;
+	if (x > 79) {
+			x = 0;
 	}
-	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroesnomemudado/espicula" + seqarquivo[x] + ".pdr");
+    x++;
+	AnsiString s = IntToStr(x);
+	//ShowMessage(s);
+	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/1treinamento/normal ("+ s + ").pdr");
 }
 //---------------------------------------------------------------------------
 
