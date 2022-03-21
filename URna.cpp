@@ -83,7 +83,8 @@ float derivada(float net, int funcao, float a)
 
 unsigned long contador = 0, epocas = 0;
 
-int a = 0, b = 0, i = 0, j = 0, k = 0, n = 0, padroes = 0, fim = 0, funcao = 0;                 float rnd = 0, soma = 0, taxa_aprendizado = 0, MOMENTUM = 0, precisao_da_randomizacao = 0;
+int a = 0, b = 0, i = 0, j = 0, k = 0, n = 0, padroes = 0, fim = 0, funcao = 0;
+float rnd = 0, soma = 0, taxa_aprendizado = 0, MOMENTUM = 0, precisao_da_randomizacao = 0;
 float ERRO = 0, erro_medio_quadratico = 0, erro_quadratico = 0, threshold = 0;
 float curva = 0;
 
@@ -91,10 +92,10 @@ int padroes_validacao = 0;
 float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 
 
-   // cx deve ser 512
-const int cx = 2;         // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
+// cx deve ser 512
+const int cx = 2;          // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
 const int c1 = 1;          // Camada Intermediária.
-const int c2 = 2;           // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
+const int c2 = 2;          // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
 
 float w1[cx*c1]  = {0};     // cx*c1
 float w2[c1*c2]  = {0};     // c1*c2
@@ -606,7 +607,7 @@ void __fastcall Thread::Execute()
                     // rba - Fazer
 					// Chama a função para ler os arquivos      ---     pode ser a função que o giovani passou
 						// Grava temporario no vetor p[] com 2048 valor * apenas 1 linha
-						  // a cada epoca chama a função denovo e só sobrescreve o vetor temporario ai ocupa menos memório
+						  // a cada epoca chama a função denovo e só sobrescreve o vetor temporario ai ocupa menos memória
 					carregarArquivo(i);
 					soma += w1[n] * p[i];
 					n += 1;
