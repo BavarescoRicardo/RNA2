@@ -17,8 +17,10 @@ float* Amostras;
 float amos[2048];
 void lerArquivos(AnsiString ArquivoDeEventos);
 void carregarArquivo(int x);
+void carregarArquivoValidacao(int x);
 void addAmostraGraph(int NumeroDeAmostras, float Amostras[2048]);
 float normAmostras(int NumeroDeAmostras, float Amostras[2048]);
+bool validacao = false;
 
 
 
@@ -129,7 +131,7 @@ float d[40][c2] =
 	1, 1
 };
 
-float v[30][cx] =
+float v[4][cx] =
 {0};
 //
 //
@@ -274,9 +276,12 @@ float normAmostras(int NumeroDeAmostras, float Amostra[2048])
         // Esse calculo é para encontrar o maximo em modulo para a linha n descer abaixo do grafico e nem subir para fora
 		if(( sqrt(max*max) < sqrt(min*min)))
 			max = sqrt(min*min);
-
+		if (validacao)
+		{
+			v[1][a] = (p[a] / max);
+		}
 		p[a] = (p[a] / max);
-	//		 p[a] = ((p[a] - min/2) / (max - min));
+
 	}
 	// Plota as amostrar - Normalizadas -  no gráfico
 	//	addAmostraGraph(NumeroDeAmostras, Amostras);
@@ -313,6 +318,7 @@ void __fastcall TFmRna::FormCreate(TObject *Sender)
 void __fastcall TFmRna::Button1Click(TObject *Sender)
 {
 	testar = false;
+    validacao = false;
 
 	// Limpa as séries do chart para nova plotagem.
 	Chart1->Series[0]->Clear();
@@ -329,6 +335,7 @@ void __fastcall TFmRna::Button1Click(TObject *Sender)
 
 void __fastcall TFmRna::Button2Click(TObject *Sender)
 {
+    validacao = false;
 	// Verificação da instância da thread de atualização do gráfico.
 	if (MyThread != NULL)
 	{
@@ -913,6 +920,7 @@ void __fastcall TFmRna::ListBox2Click(TObject *Sender)
 
 void __fastcall TFmRna::btnAbrirArquivoClick(TObject *Sender)
 {
+    validacao = false;
 //    ProcurarArquivo
     testar = true;
 	ProcurarArquivo = new TOpenDialog(this);
@@ -921,21 +929,33 @@ void __fastcall TFmRna::btnAbrirArquivoClick(TObject *Sender)
 
 	amostrasGraf->Series[0]->Clear();
 	ShowMessage("Arquivo selecionado:  " + ExtractFileName(ProcurarArquivo->FileName));
-	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName(ProcurarArquivo->FileName));
+	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/2teste/" +ExtractFileName(ProcurarArquivo->FileName));
 }
 
 void carregarArquivo(int x)
 {
+    validacao = false;
 	// lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName("EspículaOnda_PacH3_T10-Pz_003407_2048_96ms.pdr"));
 	AnsiString seqarquivo[10]  = {"1", "2", "3", "4","5", "6", "7", "8", "9", "10"};
 	if (x > 79) {
 			x = 0;
 	}
-    x++;
+	x++;
 	AnsiString s = IntToStr(x);
 	//ShowMessage(s);
 	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/1treinamento/normal ("+ s + ").pdr");
 }
+//---------------------------------------------------------------------------
+
+// Faz o que ta escrito no nome da função : )
+void carregarArquivoValidacao(int x)
+{
+	validacao = true;
+ //---------------------------------------------------------------------------
+	//ShowMessage(s);
+	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/3validacao/Normal.pdr");
+}
+
 //---------------------------------------------------------------------------
 
 
