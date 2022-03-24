@@ -366,7 +366,7 @@ void __fastcall Thread::Execute()
 	precisao_da_randomizacao = 0.01; // Precisão da randomização (0.1, 0.01, 0.001)
 	ERRO = 0.0001;              	// Erro mínimo aceitável da rede (se aplicável).
 	MOMENTUM = 0.9;             	// Termo de momentum.
-	epocas = 100;            		// Número máximo de épocas de treinamento.
+	epocas = 5;            		// Número máximo de épocas de treinamento.
 	rnd = 0;                    	// Variável auxiliar para a randomização dos pesos.
 	soma = 0;                   	// Variável auxiliar para a soma das sinapses.
 	erro_medio_quadratico = 0;  	// Variável auxiliar do Erro médio quadrático.
