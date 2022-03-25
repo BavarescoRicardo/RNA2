@@ -17,8 +17,10 @@ float* Amostras;
 float amos[2048];
 void lerArquivos(AnsiString ArquivoDeEventos);
 void carregarArquivo(int x);
+void carregarArquivoValidacao(int x);
 void addAmostraGraph(int NumeroDeAmostras, float Amostras[2048]);
 float normAmostras(int NumeroDeAmostras, float Amostras[2048]);
+bool validacao = false;
 
 
 
@@ -94,9 +96,9 @@ float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 
 
 // cx deve ser 512
-const int cx = 512;          // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
-const int c1 = 1;          // Camada Intermediária.
-const int c2 = 2;          // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
+const int cx = 82;          // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
+const int c1 = 10;          // Camada Intermediária.
+const int c2 = 2;           // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
 
 float w1[cx*c1]  = {0};     // cx*c1
 float w2[c1*c2]  = {0};     // c1*c2
@@ -121,7 +123,7 @@ float p[520] = {0};
 
 // Valores desejaos dos padrões ao final do treinamento.
 // Matriz temporaria      		  4 padroes
-float d[4][c2] =
+float d[40][c2] =
 {
 	0, 0,
 	0, 1,
@@ -129,7 +131,7 @@ float d[4][c2] =
 	1, 1
 };
 
-float v[3][cx] =
+float v[4][cx] =
 {0};
 //
 //
@@ -229,19 +231,6 @@ void addAmostraGraph(int NumeroDeAmostras, float Amostr[2048])
 		FmRna->Chart2->Refresh();
 		FmRna->ListBox1Click(FmRna);
 	}
-//	else
-//	{
-//		normAmostras(NumeroDeAmostras, amos);
-//		// Limpar dados do gráfico
-//		FmRna->Chart1->Series[0]->Clear();
-//		FmRna->Chart1->Series[1]->Clear();
-//
-//		for (int a = 0; a < 500; a++)
-//		{
-//			// Adicionar ao terceiro grafico
-//			FmRna->Chart1->Series[0]->AddY(p[a]);
-//		}
-//	}
 }
 
 float normAmostras(int NumeroDeAmostras, float Amostra[2048])
@@ -265,7 +254,7 @@ float normAmostras(int NumeroDeAmostras, float Amostra[2048])
 
 
 	// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
-	for (int a = 0; a < 612; a++)
+	for (int a = 0; a < 580; a++)
 	{
 		// Normalizar valores amostras para ficar entre -1 e 1
 		// Possíveis formas de normalizar são:
@@ -287,9 +276,12 @@ float normAmostras(int NumeroDeAmostras, float Amostra[2048])
         // Esse calculo é para encontrar o maximo em modulo para a linha n descer abaixo do grafico e nem subir para fora
 		if(( sqrt(max*max) < sqrt(min*min)))
 			max = sqrt(min*min);
-
+		if (validacao)
+		{
+			v[1][a] = (p[a] / max);
+		}
 		p[a] = (p[a] / max);
-	//		 p[a] = ((p[a] - min/2) / (max - min));
+
 	}
 	// Plota as amostrar - Normalizadas -  no gráfico
 	//	addAmostraGraph(NumeroDeAmostras, Amostras);
@@ -326,6 +318,7 @@ void __fastcall TFmRna::FormCreate(TObject *Sender)
 void __fastcall TFmRna::Button1Click(TObject *Sender)
 {
 	testar = false;
+    validacao = false;
 
 	// Limpa as séries do chart para nova plotagem.
 	Chart1->Series[0]->Clear();
@@ -342,6 +335,7 @@ void __fastcall TFmRna::Button1Click(TObject *Sender)
 
 void __fastcall TFmRna::Button2Click(TObject *Sender)
 {
+    validacao = false;
 	// Verificação da instância da thread de atualização do gráfico.
 	if (MyThread != NULL)
 	{
@@ -379,7 +373,7 @@ void __fastcall Thread::Execute()
 	precisao_da_randomizacao = 0.01; // Precisão da randomização (0.1, 0.01, 0.001)
 	ERRO = 0.0001;              	// Erro mínimo aceitável da rede (se aplicável).
 	MOMENTUM = 0.9;             	// Termo de momentum.
-	epocas = 5;            		// Número máximo de épocas de treinamento.
+	epocas = 100;            		// Número máximo de épocas de treinamento.
 	rnd = 0;                    	// Variável auxiliar para a randomização dos pesos.
 	soma = 0;                   	// Variável auxiliar para a soma das sinapses.
 	erro_medio_quadratico = 0;  	// Variável auxiliar do Erro médio quadrático.
@@ -493,6 +487,12 @@ void __fastcall Thread::Execute()
 	}
 	fprintf(fp,"\n");
 
+	// Lê os arquivos
+	for(int contV = 0; contV < padroes; contV++)
+	{
+		carregarArquivoValidacao(contV);
+	}
+
 	// Informações dos parâmetros utilizados no treinamento.
 	fprintf(fp,"Parametros de Configuração da Rede\n");
 	fprintf(fp,"Padrões............: %d\n", 	padroes);
@@ -529,7 +529,7 @@ void __fastcall Thread::Execute()
 					// Chama a função para ler os arquivos      ---     pode ser a função que o giovani passou
 						// Grava temporario no vetor p[] com 2048 valor * apenas 1 linha
 						  // a cada epoca chama a função denovo e só sobrescreve o vetor temporario ai ocupa menos memória
-					carregarArquivo(cx);
+					carregarArquivo(i);
 					soma += w1[n] * p[i];
 					n += 1;
 				}
@@ -926,6 +926,7 @@ void __fastcall TFmRna::ListBox2Click(TObject *Sender)
 
 void __fastcall TFmRna::btnAbrirArquivoClick(TObject *Sender)
 {
+    validacao = false;
 //    ProcurarArquivo
     testar = true;
 	ProcurarArquivo = new TOpenDialog(this);
@@ -934,20 +935,33 @@ void __fastcall TFmRna::btnAbrirArquivoClick(TObject *Sender)
 
 	amostrasGraf->Series[0]->Clear();
 	ShowMessage("Arquivo selecionado:  " + ExtractFileName(ProcurarArquivo->FileName));
-	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName(ProcurarArquivo->FileName));
+	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/2teste/" +ExtractFileName(ProcurarArquivo->FileName));
 }
 
 void carregarArquivo(int x)
 {
+    validacao = false;
 	// lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName("EspículaOnda_PacH3_T10-Pz_003407_2048_96ms.pdr"));
 	AnsiString seqarquivo[10]  = {"1", "2", "3", "4","5", "6", "7", "8", "9", "10"};
 	if (x > 79) {
 			x = 0;
 	}
-    x++;
+	x++;
 	AnsiString s = IntToStr(x);
+	//ShowMessage(s);
 	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/1treinamento/normal ("+ s + ").pdr");
 }
+//---------------------------------------------------------------------------
+
+// Faz o que ta escrito no nome da função : )
+void carregarArquivoValidacao(int x)
+{
+	validacao = true;
+ //---------------------------------------------------------------------------
+	//ShowMessage(s);
+	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/3validacao/Normal.pdr");
+}
+
 //---------------------------------------------------------------------------
 
 

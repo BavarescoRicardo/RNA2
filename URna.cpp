@@ -20,7 +20,7 @@ void carregarArquivo(int x);
 void carregarArquivoValidacao(int x);
 void addAmostraGraph(int NumeroDeAmostras, float Amostras[2048]);
 float normAmostras(int NumeroDeAmostras, float Amostras[2048]);
-bool validacao = false;
+int validacao = 5;
 
 
 
@@ -98,7 +98,7 @@ float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 // cx deve ser 512
 const int cx = 82;          // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
 const int c1 = 10;          // Camada Intermediária.
-const int c2 = 2;          // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
+const int c2 = 2;           // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
 
 float w1[cx*c1]  = {0};     // cx*c1
 float w2[c1*c2]  = {0};     // c1*c2
@@ -123,7 +123,7 @@ float p[520] = {0};
 
 // Valores desejaos dos padrões ao final do treinamento.
 // Matriz temporaria      		  4 padroes
-float d[40][c2] =
+float d[4][c2] =
 {
 	0, 0,
 	0, 1,
@@ -254,7 +254,7 @@ float normAmostras(int NumeroDeAmostras, float Amostra[2048])
 
 
 	// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
-	for (int a = 0; a < 612; a++)
+	for (int a = 0; a < 580; a++)
 	{
 		// Normalizar valores amostras para ficar entre -1 e 1
 		// Possíveis formas de normalizar são:
@@ -276,9 +276,9 @@ float normAmostras(int NumeroDeAmostras, float Amostra[2048])
         // Esse calculo é para encontrar o maximo em modulo para a linha n descer abaixo do grafico e nem subir para fora
 		if(( sqrt(max*max) < sqrt(min*min)))
 			max = sqrt(min*min);
-		if (validacao)
+		if (validacao < 5)
 		{
-			v[1][a] = (p[a] / max);
+			v[validacao][a] = (p[a] / max);
 		}
 		p[a] = (p[a] / max);
 
@@ -318,7 +318,7 @@ void __fastcall TFmRna::FormCreate(TObject *Sender)
 void __fastcall TFmRna::Button1Click(TObject *Sender)
 {
 	testar = false;
-    validacao = false;
+    validacao = 5;
 
 	// Limpa as séries do chart para nova plotagem.
 	Chart1->Series[0]->Clear();
@@ -335,7 +335,7 @@ void __fastcall TFmRna::Button1Click(TObject *Sender)
 
 void __fastcall TFmRna::Button2Click(TObject *Sender)
 {
-    validacao = false;
+    validacao = 5;
 	// Verificação da instância da thread de atualização do gráfico.
 	if (MyThread != NULL)
 	{
@@ -486,6 +486,12 @@ void __fastcall Thread::Execute()
 		fprintf(fp,"\n");
 	}
 	fprintf(fp,"\n");
+
+	// Lê os arquivos para validação  -- rba
+	for(int contV = 1; contV <= padroes; contV++)
+	{
+		carregarArquivoValidacao(contV);
+	}
 
 	// Informações dos parâmetros utilizados no treinamento.
 	fprintf(fp,"Parametros de Configuração da Rede\n");
@@ -920,7 +926,7 @@ void __fastcall TFmRna::ListBox2Click(TObject *Sender)
 
 void __fastcall TFmRna::btnAbrirArquivoClick(TObject *Sender)
 {
-    validacao = false;
+    validacao = 5;
 //    ProcurarArquivo
     testar = true;
 	ProcurarArquivo = new TOpenDialog(this);
@@ -934,7 +940,7 @@ void __fastcall TFmRna::btnAbrirArquivoClick(TObject *Sender)
 
 void carregarArquivo(int x)
 {
-    validacao = false;
+    validacao = 5;
 	// lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName("EspículaOnda_PacH3_T10-Pz_003407_2048_96ms.pdr"));
 	AnsiString seqarquivo[10]  = {"1", "2", "3", "4","5", "6", "7", "8", "9", "10"};
 	if (x > 79) {
@@ -950,10 +956,24 @@ void carregarArquivo(int x)
 // Faz o que ta escrito no nome da função : )
 void carregarArquivoValidacao(int x)
 {
-	validacao = true;
+	validacao = x;
  //---------------------------------------------------------------------------
 	//ShowMessage(s);
-	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/3validacao/Normal.pdr");
+	switch(x)
+	{
+		case 0:
+			lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/3validacao/EspículaOnda.pdr");
+			break;
+		case 1:
+			lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/3validacao/Normal.pdr");
+			break;
+		case 2:
+			lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/3validacao/Piscada.pdr");
+			break;
+		default:
+			lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/3validacao/Ruido.pdr");
+			break;
+	}
 }
 
 //---------------------------------------------------------------------------
