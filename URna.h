@@ -42,10 +42,6 @@ class TFmRna : public TForm
 	TFastLineSeries *Series4;
 	TPanel *Panel1;
 	TOpenDialog *ProcurarArquivo;
-	TTabSheet *tabs03;
-	TChart *amostrasGraf;
-	TLineSeries *Series5;
-	TButton *btnNorm;
 	TLabel *Label1;
 	TLabel *Label3;
 	TLabel *Label4;

@@ -759,8 +759,8 @@ void __fastcall TFmRna::AtualizaGrafico()
 	// Plota as amostras no gráfico.
 	//FmRna->Memo1->Lines->Add("Erro treinamento");
 	FmRna->Memo1->Lines->Add(FloatToStrF(erro_medio_quadratico,ffFixed,10,6));
-	//FmRna->Memo1->Lines->Add("Erro validação");
-	//FmRna->Memo1->Lines->Add(FloatToStrF(erro_medio_quadratico_validacao,ffFixed,10,6));
+	FmRna->Memo1->Lines->Add("Erro validação");
+	FmRna->Memo1->Lines->Add(FloatToStrF(erro_medio_quadratico_validacao,ffFixed,10,6));
 
 	FmRna->Chart1->Series[0]->AddY(erro_medio_quadratico);
 	FmRna->Chart1->Series[1]->AddY(erro_medio_quadratico_validacao);
@@ -933,7 +933,6 @@ void __fastcall TFmRna::btnAbrirArquivoClick(TObject *Sender)
 	ProcurarArquivo->Title="Open a New File";
 	ProcurarArquivo->Execute();
 
-	amostrasGraf->Series[0]->Clear();
 	ShowMessage("Arquivo selecionado:  " + ExtractFileName(ProcurarArquivo->FileName));
 	lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/2teste/" +ExtractFileName(ProcurarArquivo->FileName));
 }
@@ -942,8 +941,7 @@ void carregarArquivo(int x)
 {
     validacao = 5;
 	// lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/padroes/" +ExtractFileName("EspículaOnda_PacH3_T10-Pz_003407_2048_96ms.pdr"));
-	AnsiString seqarquivo[10]  = {"1", "2", "3", "4","5", "6", "7", "8", "9", "10"};
-	if (x > 79) {
+	if (x > 89) {
 			x = 0;
 	}
 	x++;
