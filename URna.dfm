@@ -35,9 +35,17 @@ object FmRna: TFmRna
           'Curva de Treinamento da Rede Neural')
         BottomAxis.Automatic = False
         BottomAxis.AutomaticMaximum = False
-        BottomAxis.Maximum = 250.000000000000000000
+        BottomAxis.Maximum = 25.000000000000000000
         BottomAxis.MinimumOffset = 3
-        LeftAxis.MinimumOffset = 5
+        LeftAxis.Automatic = False
+        LeftAxis.AutomaticMaximum = False
+        LeftAxis.AutomaticMinimum = False
+        LeftAxis.Maximum = 1.000000000000000000
+        LeftAxis.MaximumOffset = 1
+        LeftAxis.MinimumOffset = 1
+        RightAxis.Automatic = False
+        RightAxis.AutomaticMaximum = False
+        RightAxis.Maximum = 1.000000000000000000
         View3D = False
         TabOrder = 0
         DefaultCanvas = 'TGDIPlusCanvas'

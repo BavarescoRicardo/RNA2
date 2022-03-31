@@ -96,8 +96,8 @@ float erro_medio_quadratico_validacao = 0, erro_quadratico_validacao = 0;
 
 
 // cx deve ser 512
-const int cx = 82;          // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
-const int c1 = 10;          // Camada Intermediária.
+const int cx = 512;          // Camada de entrada. // rba Reduzi a camada de entrada pois o processo estava pesando mt
+const int c1 = 2;          // Camada Intermediária.
 const int c2 = 2;           // Camada de Saída. /// 4 Opções 2 bits 00 01 10 11
 
 float w1[cx*c1]  = {0};     // cx*c1
@@ -136,9 +136,12 @@ float v[4][cx] =
 //
 //
 // Valores desejados dos padrões ao final do treinamento.
-float dv[3][c2] =
+float dv[4][c2] =
 {
-	0.0,	0.0,    0.0
+	0.0,  0.0,
+	0.0,  1.0,
+	1.0,  0.0,
+	1.0,  1.0
 };
 
 
@@ -239,7 +242,7 @@ float normAmostras(int NumeroDeAmostras, float Amostra[2048])
 	// O valor é (i + 668) para pegar os valores do meio do sinal - 100 amostras do fseek set para pular o cabecalho  + margem de 50 antes e 50 depois
 	float min, max = amos[400];
 
-	for ((i = 0); i < 612; i++) {
+	for ((i = 0); i < 512; i++) {
 
 		if(amos[i + 618] < min){
 			min = (amos[i + 618]);
@@ -254,7 +257,7 @@ float normAmostras(int NumeroDeAmostras, float Amostra[2048])
 
 
 	// Para todas as amostras - Normalizar e passar para vetor utilizado pela rede neural
-	for (int a = 0; a < 580; a++)
+	for (int a = 0; a < 512; a++)
 	{
 		// Normalizar valores amostras para ficar entre -1 e 1
 		// Possíveis formas de normalizar são:
@@ -278,7 +281,7 @@ float normAmostras(int NumeroDeAmostras, float Amostra[2048])
 			max = sqrt(min*min);
 		if (validacao < 5)
 		{
-			v[validacao][a] = (p[a] / max);
+			d[validacao][a] = (p[a] / max);
 		}
 		p[a] = (p[a] / max);
 
@@ -300,7 +303,7 @@ __fastcall TFmRna::TFmRna(TComponent* Owner)
 void __fastcall TFmRna::FormCreate(TObject *Sender)
 {
 	// Redimensiona o valor máximo do eixo x com o tamanho da tela desejada.
-	Chart2->BottomAxis->Maximum = 600;
+	Chart2->BottomAxis->Maximum = 540;
 
 	// Expande o gráfico para comportar a quantidade de amostras contidas em max_tela.
 	for (unsigned int a = 0; a < 600; a++)
@@ -367,25 +370,25 @@ void __fastcall Thread::Execute()
     /* initialize random weights: */
     srand (time(NULL));
 
-	padroes = 4;                   // Número de padrões a treinar.
+	padroes = 4;                    // Número de padrões a treinar.
 	funcao = 0;                 	// Função Logística(0).
-	taxa_aprendizado = 0.001;    	// Taxa de Aprendizado.
-	precisao_da_randomizacao = 0.01; // Precisão da randomização (0.1, 0.01, 0.001)
+	taxa_aprendizado = 0.01;    	// Taxa de Aprendizado.
+	precisao_da_randomizacao = 0.1; // Precisão da randomização (0.1, 0.01, 0.001)
 	ERRO = 0.0001;              	// Erro mínimo aceitável da rede (se aplicável).
-	MOMENTUM = 0.9;             	// Termo de momentum.
-	epocas = 100;            		// Número máximo de épocas de treinamento.
+	MOMENTUM = 0.8;             	// Termo de momentum.
+	epocas = 20;            		// Número máximo de épocas de treinamento.
 	rnd = 0;                    	// Variável auxiliar para a randomização dos pesos.
-	soma = 0;                   	// Variável auxiliar para a soma das sinapses.
-	erro_medio_quadratico = 0;  	// Variável auxiliar do Erro médio quadrático.
-	erro_quadratico = 0;        	// Variável auxiliar do erro quadrático.
+	soma = 1;                   	// Variável auxiliar para a soma das sinapses.
+	erro_medio_quadratico = 1;  	// Variável auxiliar do Erro médio quadrático.
+	erro_quadratico = 1;        	// Variável auxiliar do erro quadrático.
 	fim = 0;                    	// Variável de controle do final do treinamento.
 	contador = 0;               	// Variável de controle do número de épocas.
 	curva = 0.3;
 
 
 	padroes_validacao = 3; 		// Número de padrões a validar.
-	erro_medio_quadratico_validacao = 0;  	// Variável auxiliar do Erro médio quadrático ded validação.
-	erro_quadratico_validacao = 0;  // Variável auxiliar do erro quadrático de validação.
+	erro_medio_quadratico_validacao = 1;  	// Variável auxiliar do Erro médio quadrático ded validação.
+	erro_quadratico_validacao = 1;  		// Variável auxiliar do erro quadrático de validação.
 
 
 
@@ -639,7 +642,7 @@ void __fastcall Thread::Execute()
 
 
 		// Plotagem dos dados sincronizados com a thread.
-		Synchronize(FmRna->AtualizaGrafico);
+		//Synchronize(FmRna->AtualizaGrafico);
 		//erro_medio_quadratico = 0;
 
 
@@ -714,7 +717,7 @@ void __fastcall Thread::Execute()
 
 //        rba _Erro aoo sincronizar
 		// Plotagem dos dados sincronizados com a thread.
-	   	//Synchronize(FmRna->AtualizaGrafico);
+	   	Synchronize(FmRna->AtualizaGrafico);
 
 		erro_medio_quadratico = 0;
 		erro_medio_quadratico_validacao = 0;
@@ -759,7 +762,7 @@ void __fastcall TFmRna::AtualizaGrafico()
 	// Plota as amostras no gráfico.
 	//FmRna->Memo1->Lines->Add("Erro treinamento");
 	FmRna->Memo1->Lines->Add(FloatToStrF(erro_medio_quadratico,ffFixed,10,6));
-	FmRna->Memo1->Lines->Add("Erro validação");
+	//FmRna->Memo1->Lines->Add("Erro validação");
 	FmRna->Memo1->Lines->Add(FloatToStrF(erro_medio_quadratico_validacao,ffFixed,10,6));
 
 	FmRna->Chart1->Series[0]->AddY(erro_medio_quadratico);
