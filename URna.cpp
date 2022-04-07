@@ -281,7 +281,7 @@ float normAmostras(int NumeroDeAmostras, float Amostra[2048])
 			max = sqrt(min*min);
 		if (validacao < 5)
 		{
-			d[validacao][a] = (p[a] / max);
+			v[validacao][a] = (p[a] / max);
 		}
 		p[a] = (p[a] / max);
 
@@ -372,23 +372,23 @@ void __fastcall Thread::Execute()
 
 	padroes = 4;                    // Número de padrões a treinar.
 	funcao = 0;                 	// Função Logística(0).
-	taxa_aprendizado = 0.01;    	// Taxa de Aprendizado.
+	taxa_aprendizado = 0.001;    	// Taxa de Aprendizado.
 	precisao_da_randomizacao = 0.1; // Precisão da randomização (0.1, 0.01, 0.001)
 	ERRO = 0.0001;              	// Erro mínimo aceitável da rede (se aplicável).
-	MOMENTUM = 0.8;             	// Termo de momentum.
-	epocas = 20;            		// Número máximo de épocas de treinamento.
+	MOMENTUM = 0.5;             	// Termo de momentum.
+	epocas = 500;            		// Número máximo de épocas de treinamento.
 	rnd = 0;                    	// Variável auxiliar para a randomização dos pesos.
-	soma = 1;                   	// Variável auxiliar para a soma das sinapses.
-	erro_medio_quadratico = 1;  	// Variável auxiliar do Erro médio quadrático.
-	erro_quadratico = 1;        	// Variável auxiliar do erro quadrático.
+	soma = 0;                   	// Variável auxiliar para a soma das sinapses.
+	erro_medio_quadratico = 0;  	// Variável auxiliar do Erro médio quadrático.
+	erro_quadratico = 0;        	// Variável auxiliar do erro quadrático.
 	fim = 0;                    	// Variável de controle do final do treinamento.
 	contador = 0;               	// Variável de controle do número de épocas.
 	curva = 0.3;
 
 
-	padroes_validacao = 3; 		// Número de padrões a validar.
-	erro_medio_quadratico_validacao = 1;  	// Variável auxiliar do Erro médio quadrático ded validação.
-	erro_quadratico_validacao = 1;  		// Variável auxiliar do erro quadrático de validação.
+	padroes_validacao = 4; 		// Número de padrões a validar.
+	erro_medio_quadratico_validacao = 0;  	// Variável auxiliar do Erro médio quadrático ded validação.
+	erro_quadratico_validacao = 0;  		// Variável auxiliar do erro quadrático de validação.
 
 
 
@@ -566,7 +566,7 @@ void __fastcall Thread::Execute()
 			erro_quadratico = 0;
 			for(j = 0; j < c2; j++)
 			{
-				erro_quadratico += pow((d[k][j] - saida_camada2[j]),2);
+				erro_quadratico += pow((v[k][j] - saida_camada2[j]),2);
 			}
 
 			//Acumula o Erro Quadratico (Criterio de Parada).
@@ -583,7 +583,7 @@ void __fastcall Thread::Execute()
 			//Calculo do erro para cada neurônio da camada 2.
 			for (i = 0; i < c2; i++)
 			{
-				erro_camada2[i] = (d[k][i] - saida_camada2[i]) * derivada(entrada_camada2[i],funcao,curva);
+				erro_camada2[i] = (v[k][i] - saida_camada2[i]) * derivada(entrada_camada2[i],funcao,curva);
 			}
 
 			//Atualizacao dos pesos para camada 2.
@@ -972,7 +972,7 @@ void carregarArquivoValidacao(int x)
 			lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/3validacao/Piscada.pdr");
 			break;
 		default:
-			lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/3validacao/Ruido.pdr");
+			lerArquivos("C:/Users/Ninguem/Desktop/Sistemas Inteligentes/RNA2/3 padroes/3validacao/Normal.pdr");
 			break;
 	}
 }

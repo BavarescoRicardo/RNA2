@@ -35,9 +35,17 @@ object FmRna: TFmRna
           'Curva de Treinamento da Rede Neural')
         BottomAxis.Automatic = False
         BottomAxis.AutomaticMaximum = False
-        BottomAxis.Maximum = 250.000000000000000000
+        BottomAxis.Maximum = 480.000000000000000000
         BottomAxis.MinimumOffset = 3
-        LeftAxis.MinimumOffset = 5
+        LeftAxis.Automatic = False
+        LeftAxis.AutomaticMaximum = False
+        LeftAxis.AutomaticMinimum = False
+        LeftAxis.Maximum = 1.000000000000000000
+        LeftAxis.MaximumOffset = 1
+        LeftAxis.MinimumOffset = 1
+        RightAxis.Automatic = False
+        RightAxis.AutomaticMaximum = False
+        RightAxis.Maximum = 1.000000000000000000
         View3D = False
         TabOrder = 0
         DefaultCanvas = 'TGDIPlusCanvas'
@@ -205,45 +213,6 @@ object FmRna: TFmRna
         Caption = 'Abrir arquivo'
         TabOrder = 1
         OnClick = btnAbrirArquivoClick
-      end
-    end
-    object tabs03: TTabSheet
-      Caption = 'Padr'#245'es'
-      ImageIndex = 2
-      object amostrasGraf: TChart
-        Left = 3
-        Top = 3
-        Width = 830
-        Height = 482
-        Title.Text.Strings = (
-          'TChart')
-        TabOrder = 0
-        DefaultCanvas = 'TGDIPlusCanvas'
-        ColorPaletteIndex = 13
-        object Series5: TLineSeries
-          Shadow.Visible = False
-          Title = 'sinalA'
-          Brush.BackColor = clDefault
-          Dark3D = False
-          DrawStyle = dsCurve
-          Pointer.Draw3D = False
-          Pointer.InflateMargins = True
-          Pointer.Style = psRectangle
-          XValues.Name = 'X'
-          XValues.Order = loAscending
-          YValues.Name = 'Y'
-          YValues.Order = loNone
-          Transparency = 7
-        end
-      end
-      object btnNorm: TButton
-        Left = 896
-        Top = 48
-        Width = 175
-        Height = 50
-        Caption = 'Normalizar amostras'
-        TabOrder = 1
-        OnClick = btnNormClick
       end
     end
   end

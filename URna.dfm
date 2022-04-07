@@ -35,7 +35,7 @@ object FmRna: TFmRna
           'Curva de Treinamento da Rede Neural')
         BottomAxis.Automatic = False
         BottomAxis.AutomaticMaximum = False
-        BottomAxis.Maximum = 25.000000000000000000
+        BottomAxis.Maximum = 480.000000000000000000
         BottomAxis.MinimumOffset = 3
         LeftAxis.Automatic = False
         LeftAxis.AutomaticMaximum = False
